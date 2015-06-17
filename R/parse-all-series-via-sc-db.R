@@ -14,7 +14,8 @@ x <- x$soilseriesname
 # init list to store results
 l <- list()
 
-for(i in x[sample(1:length(x), size = 1000)]) {
+# for(i in x[sample(1:length(x), size = 1000)]) {
+for(i in x) {
   print(i)
   x.parsed <- getAndParseOSD(i)
   # there are some OSDs that may not exist
@@ -25,7 +26,7 @@ for(i in x[sample(1:length(x), size = 1000)]) {
 }
 
 # ID those series that were not parsed
-series.not.parsed <- names(sapply(l, is.null))
+series.not.parsed <- names(which(sapply(l, is.null)))
 
 # convert parsed series data to DF and save
 d <- ldply(l)

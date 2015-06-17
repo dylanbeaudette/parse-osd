@@ -38,13 +38,16 @@ extractHzData <- function(x.parsed) {
   options(stringsAsFactors=FALSE)
   
   # where does the typical pedon block start?
+  # note: we are only keeping the first match
   ## TODO: relaxed matching required to catch typos...
   ## this part is the most likely to break
   tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
   # the last element contains "TYPE LOCATION:" but no horizon data
-  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TYPE LOCATION', i, ignore.case = TRUE)) > 0))[1] - 1
+  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sLOCATION', i, ignore.case = TRUE)) > 0))[1] - 1
   
   ## TODO: bail out here if we cannot define the locations of horizon records
+  if(is.na(tp.start) | is.na(tp.stop))
+    return(NULL)
   
   # combine into single string
   # note, this block of text is approximate

@@ -43,6 +43,9 @@ extractHzData(x.parsed)
 x.parsed <- getAndParseOSD('MENTZ')
 extractHzData(x.parsed)
 
+# non-standard TYPE LOCATION heading 
+x.parsed <- getAndParseOSD('ALBUS')
+extractHzData(x.parsed)
 
 
 # parsing all of the series data could be done from the SC database...
