@@ -9,8 +9,8 @@ this will be the R-based rewrite of the python code
 
 # TODO
 1. figure out how to deal with multiple colors
-2. prime (') is not always handled properly
-3. caret (^) is not parsed correctly
-4. 'Thickness' records are still getting in here...
-5. how can we extract this: '3E & Bt' ?
+2. combine top+bottom with top only rules, ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
+3. color matching rules don't work properly when only moist colors are specified (http://casoilresource.lawr.ucdavis.edu/sde/?series=canarsie)
+4. how can we match neutral colors: (N 2.5/)
+5. how can we extract mixed horizons?: '3E & Bt' ?
 
