@@ -12,6 +12,8 @@ rmNullObs <- function(x) {
 seriesNameToURL <- function(s) {
   base.url <- 'http://soilseriesdesc.sc.egov.usda.gov/OSD_Docs/'
   s <- toupper(s)
+  # convert space to _
+  s <- gsub(pattern = ' ', replacement = '_', s)
   u <- paste0(base.url, substr(s, 1, 1), '/', s, '.html')
   return(u)
 }
@@ -33,9 +35,11 @@ getAndParseOSD <- function(s) {
 
 
 extractHzData <- function(x.parsed) {
+  options(stringsAsFactors=FALSE)
   
   # where does the typical pedon block start?
-  tp.start <- which(sapply(x.parsed, function(i) length(grep('TYPICAL PEDON:', i, fixed = TRUE)) > 0)) + 1
+  ## TODO: relaxed matching required to catch typos...
+  tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i)) > 0)) + 1
   # the last element contains "TYPE LOCATION:" but no horizon data
   tp.stop <- which(sapply(x.parsed, function(i) length(grep('TYPE LOCATION:', i, fixed = TRUE)) > 0)) - 1
   

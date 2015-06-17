@@ -18,3 +18,20 @@ extractHzData(x.parsed)
 
 x.parsed <- getAndParseOSD('academy')
 extractHzData(x.parsed)
+
+x.parsed <- getAndParseOSD('newot')
+extractHzData(x.parsed)
+
+x.parsed <- getAndParseOSD('flagspring')
+extractHzData(x.parsed)
+
+# error in "TYPICAL PEDON" heading
+x.parsed <- getAndParseOSD('ACKWATER')
+extractHzData(x.parsed)
+
+x.parsed <- getAndParseOSD('CASA GRANDE')
+extractHzData(x.parsed)
+
+
+
+# parsing all of the series data could be done from the SC database...

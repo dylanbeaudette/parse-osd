@@ -1,11 +1,11 @@
 # parse-osd
-Code related to parsing of OSD records. Currently relies on a directory of ALL OSD text files, the bash shell, and python. An R-based version should be much simpler to maintain, and could work directly with the HTML versions of the data. It is a huge pain in the neck to try and get the entire set of OSD text files -> might be simpler to iterate over a list of series names from the SC database and query the HTML directly.
+Code related to parsing of OSD text/HTML files.
 
 # python
-this is the current python implementation, not perfect, but gets 95% of the data I need
+This is the current python implementation, not perfect, but gets 95% of the data I need. Currently relies on a directory of ALL OSD text files, the bash shell, and python. It is a huge pain in the neck to try and get the entire set of OSD text files.
 
 # R
-this will be the R-based rewrite of the python code
+This is an R version of the python implementation, much simpler to debug and doesn't require a directory of OSD text files. It should be a simple task to iterate over a list of series names from the SC database, saving the results to an intermediate file or data structure. Failures have to be handled gracefully.
 
 # TODO
 1. figure out how to deal with multiple colors
@@ -13,4 +13,5 @@ this will be the R-based rewrite of the python code
 3. color matching rules don't work properly when only moist colors are specified (http://casoilresource.lawr.ucdavis.edu/sde/?series=canarsie)
 4. how can we match neutral colors: (N 2.5/)
 5. how can we extract mixed horizons?: '3E & Bt' ?
-
+6. typos are very hard to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
+7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
