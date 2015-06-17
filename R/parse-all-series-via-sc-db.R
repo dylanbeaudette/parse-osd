@@ -24,7 +24,10 @@ for(i in x[sample(1:length(x), size = 1000)]) {
     l[[i]] <- extractHzData(x.parsed)
 }
 
-# convert to DF and save
+# ID those series that were not parsed
+series.not.parsed <- names(sapply(l, is.null))
+
+# convert parsed series data to DF and save
 d <- ldply(l)
 names(d)[1] <- 'seriesname'
 

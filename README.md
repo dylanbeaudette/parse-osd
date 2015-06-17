@@ -15,3 +15,4 @@ This is an R version of the python implementation, much simpler to debug and doe
 5. how can we extract mixed horizons?: '3E & Bt' ?
 6. typos are very hard to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
+8. develop protocol for figuring out non-parsed records

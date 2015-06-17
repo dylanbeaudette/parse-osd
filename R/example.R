@@ -32,6 +32,17 @@ extractHzData(x.parsed)
 x.parsed <- getAndParseOSD('CASA GRANDE')
 extractHzData(x.parsed)
 
+# return NULL
+# strange notation: A [A1]--0 to 10 cm (4 inches)
+x.parsed <- getAndParseOSD('RAPSON')
+extractHzData(x.parsed)
+
+x.parsed <- getAndParseOSD('KILFOIL')
+extractHzData(x.parsed)
+
+x.parsed <- getAndParseOSD('MENTZ')
+extractHzData(x.parsed)
+
 
 
 # parsing all of the series data could be done from the SC database...

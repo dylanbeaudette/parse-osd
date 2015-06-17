@@ -39,9 +39,12 @@ extractHzData <- function(x.parsed) {
   
   # where does the typical pedon block start?
   ## TODO: relaxed matching required to catch typos...
-  tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i)) > 0)) + 1
+  ## this part is the most likely to break
+  tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
   # the last element contains "TYPE LOCATION:" but no horizon data
-  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TYPE LOCATION:', i, fixed = TRUE)) > 0)) - 1
+  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TYPE LOCATION', i, ignore.case = TRUE)) > 0))[1] - 1
+  
+  ## TODO: bail out here if we cannot define the locations of horizon records
   
   # combine into single string
   # note, this block of text is approximate
@@ -97,6 +100,10 @@ extractHzData <- function(x.parsed) {
     moist.colors[[i]] <- stri_match(this.chunk, regex=moist.color.rule)
     
   }
+  
+  # test for no parsed data, must be some funky formatting...
+  if(length(hz.data) == 0)
+    return(NULL)
   
   # convert to DF
   hz.data <- ldply(hz.data)[2:5]
