@@ -5,6 +5,10 @@ library(plyr)
 
 source('local_functions.R')
 
+# "E and Bt1"
+x.parsed <- getAndParseOSD('colonie')
+extractHzData(x.parsed)
+
 # some problematic OSDs
 x.parsed <- getAndParseOSD('pardee')
 extractHzData(x.parsed)
@@ -46,6 +50,12 @@ extractHzData(x.parsed)
 # non-standard TYPE LOCATION heading 
 x.parsed <- getAndParseOSD('ALBUS')
 extractHzData(x.parsed)
+
+# no OSD document
+x.parsed <- getAndParseOSD('YALE')
+extractHzData(x.parsed)
+
+
 
 
 # parsing all of the series data could be done from the SC database...

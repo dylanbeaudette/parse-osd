@@ -25,11 +25,23 @@ for(i in x) {
     l[[i]] <- extractHzData(x.parsed)
 }
 
-# ID those series that were not parsed
-series.not.parsed <- names(which(sapply(l, is.null)))
 
 # convert parsed series data to DF and save
 d <- ldply(l)
-names(d)[1] <- 'seriesname'
+d$seriesname <- d$.id
+d$.id <- NULL
 
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
+
+# ID those series that were not parsed
+series.not.parsed <- setdiff(x, unique(d$seriesname))
+
+# model for predicting moist from dry colors
+summary(l.v <- lm(moist_value ~ dry_value, data=d))
+summary(l.c <- lm(moist_chroma ~ dry_chroma, data=d))
+
+coef(l.c)
+coef(l.v)
+
+
+
