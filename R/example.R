@@ -5,6 +5,14 @@ library(plyr)
 
 source('local_functions.R')
 
+# multiple mention of "type location" 
+x.parsed <- getAndParseOSD('yutan')
+extractHzData(x.parsed)
+
+# multiple mention of "type location" 
+x.parsed <- getAndParseOSD('filbert')
+extractHzData(x.parsed)
+
 # "E and Bt1"
 x.parsed <- getAndParseOSD('colonie')
 extractHzData(x.parsed)

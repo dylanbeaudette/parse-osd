@@ -37,17 +37,22 @@ getAndParseOSD <- function(s) {
 extractHzData <- function(x.parsed) {
   options(stringsAsFactors=FALSE)
   
+  ## NOTE: this limits false-positives, but is thrown-off by typos
   # where does the typical pedon block start?
   # note: we are only keeping the first match
   ## TODO: relaxed matching required to catch typos...
   ## this part is the most likely to break
   tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
-  # the last element contains "TYPE LOCATION:" but no horizon data
-  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sLOCATION', i, ignore.case = TRUE)) > 0))[1] - 1
+  # the last element contains "TYPE LOCATION:" but no horizon data, may occur more than once in the document
+  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sLOCATION', i, ignore.case = TRUE)) > 0)) - 1
   
   ## TODO: bail out here if we cannot define the locations of horizon records
-  if(is.na(tp.start) | is.na(tp.stop))
+  if(is.na(tp.start) | all(sapply(tp.start, is.na)))
     return(NULL)
+  
+  # there could be multiple places in which the type location is mentioned
+  if(length(tp.stop) > 1)
+    tp.stop <- max(tp.stop)
   
   # combine into single string
   # note, this block of text is approximate
@@ -64,9 +69,43 @@ extractHzData <- function(x.parsed) {
   # detect horizons with no bottom depth
   hz.rule.no.bottom <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?--?-?\\s?([0-9.]+) (in|inches|cm|centimeters)"
   
-  # detect moist and dry colors
+  
   ## TODO: this doesn't work when only moist colors are specified (http://casoilresource.lawr.ucdavis.edu/sde/?series=canarsie)
   ## TODO: these rules will not match neutral colors: N 2.5/
+  ## TODO: toggle dry/moist assumption:
+  ##
+  ## Colors are for dry soil unless otherwise stated | Colors are for moist soil unless otherwise stated
+  ## 
+  ## E1--7 to 12 inches; very dark gray (10YR 3/1) silt loam, 50 percent gray (10YR 5/1) and 50 percent gray (10YR 6/1) dry; moderate thin platy structure parting to weak thin platy; friable, soft; common fine and medium roots throughout; common fine tubular pores; few fine distinct dark yellowish brown (10YR 4/6) friable masses of iron accumulations with sharp boundaries on faces of peds; strongly acid; clear wavy boundary.
+  
+  ##   A--0 to 6 inches; light gray (10YR 7/2) loam, dark grayish brown (10YR 4/2) moist; moderate coarse subangular blocky structure; slightly hard, friable, slightly sticky and slightly plastic; many very fine roots; many very fine and few fine tubular and many very fine interstitial pores; 10 percent pebbles; strongly acid (pH 5.1); clear wavy boundary. (1 to 8 inches thick)
+  ##
+  
+  ## TODO: test this
+  # establist default encoding of colors
+  dry.is.default <- length(grep('for dry (soil|conditions)', paste(unlist(x.parsed), collapse=''), ignore.case = TRUE)) > 0
+  moist.is.default <- length(grep('for moist (soil|conditions)', paste(unlist(x.parsed), collapse=''), ignore.case = TRUE)) > 0
+  
+  if(dry.is.default)
+    default.moisture.state <- 'dry'
+  if(moist.is.default)
+    default.moisture.state <- 'moist'
+  
+  # if neither are specified assume moist conditions
+  if((!dry.is.default & !moist.is.default))
+    default.moisture.state <- 'moist'
+  
+  # if both are specified (?)
+  if(dry.is.default & moist.is.default)
+    default.moisture.state <- 'unknown'
+  
+  ## TODO: test this
+  # get all colors matching our rule, moist and dry and unknown, 5th column is moisture state
+  # interpretation is tough when multiple colors / hz are given
+  # single rule, with dry/moist state
+  color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\)\\s(dry|moist|)"
+  
+  # detect moist and dry colors
   dry.color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\)(?! moist)"
   moist.color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\) moist"
   
@@ -93,15 +132,39 @@ extractHzData <- function(x.parsed) {
       h <- c(h, h[4]) # move units to 5th element
       h[4] <- NA # add fake missing bottom depth
     }
-      
+    
+    # save hz data to list
     hz.data[[i]] <- h
     
-    # parse FIRST dry color
-    dry.colors[[i]] <- stri_match(this.chunk, regex=dry.color.rule)
+#     ########### this works, but not when moisture state logic is reversed
+#     # parse FIRST dry color, result is a 1-row matrix
+#     dry.colors[[i]] <- stri_match(this.chunk, regex=dry.color.rule)
+#     
+#     # parse FIRST moist color, result is a 1-row matrix
+#     moist.colors[[i]] <- stri_match(this.chunk, regex=moist.color.rule)
+#     ###########
     
-    # parse FIRST moist color
-    moist.colors[[i]] <- stri_match(this.chunk, regex=moist.color.rule)
     
+    ## TODO: test this!
+    # parse ALL colors, result is a multi-row matrix, 5th column is moisture state
+    colors <- stri_match_all(this.chunk, regex=color.rule)[[1]]
+    # replace missing moisture state with (parsed) default value
+    colors[, 5][which(colors[, 5] == '')] <- default.moisture.state
+    
+    # exctract dry|moist colors, note that there may be >1 color per state
+    dc <- colors[which(colors[, 5] == 'dry'), 1:4, drop=FALSE]
+    mc <- colors[which(colors[, 5] == 'moist'), 1:4, drop=FALSE]
+    
+    # there there was at least 1 match, keep the first 1
+    if(nrow(dc) > 0)
+      dry.colors[[i]] <- dc[1, ]
+    else
+      dry.colors[[i]] <- matrix(rep(NA, times=4), nrow = 1)
+    
+    if(nrow(mc) > 0)
+      moist.colors[[i]] <- mc[1, ]
+    else
+      moist.colors[[i]] <- matrix(rep(NA, times=4), nrow = 1)
   }
   
   # test for no parsed data, must be some funky formatting...
