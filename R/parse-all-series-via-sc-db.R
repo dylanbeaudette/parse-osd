@@ -31,17 +31,13 @@ d <- ldply(l)
 d$seriesname <- d$.id
 d$.id <- NULL
 
+## TODO, do some basic error-checking on typos in the hue
+
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
 # ID those series that were not parsed
 series.not.parsed <- setdiff(x, unique(d$seriesname))
 
-# model for predicting moist from dry colors
-summary(l.v <- lm(moist_value ~ dry_value, data=d))
-summary(l.c <- lm(moist_chroma ~ dry_chroma, data=d))
-
-coef(l.c)
-coef(l.v)
 
 
 
