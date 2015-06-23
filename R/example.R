@@ -5,6 +5,10 @@ library(plyr)
 
 source('local_functions.R')
 
+# can't parse this: (10YR 3/1 moist or dry)
+x.parsed <- getAndParseOSD('salinas')
+extractHzData(x.parsed)
+
 # error in O horizon narrative
 x.parsed <- getAndParseOSD('CROQUIB')
 extractHzData(x.parsed)
