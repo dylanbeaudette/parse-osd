@@ -44,10 +44,10 @@ extractHzData <- function(x.parsed) {
   ## this part is the most likely to break
   tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
   # the last element contains "TYPE LOCATION:" but no horizon data, may occur more than once in the document
-  tp.stop <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sLOCATION', i, ignore.case = TRUE)) > 0)) - 1
+  tp.stop <- which(sapply(x.parsed, function(i) length(grep('(TY.*|PEDON)\\sLOC', i, ignore.case = TRUE)) > 0)) - 1
   
   ## TODO: bail out here if we cannot define the locations of horizon records
-  if(is.na(tp.start) | all(sapply(tp.start, is.na)))
+  if(is.na(tp.start) | length(tp.stop) < 1)
     return(NULL)
   
   # there could be multiple places in which the type location is mentioned

@@ -5,6 +5,14 @@ library(plyr)
 
 source('local_functions.R')
 
+# error in O horizon narrative
+x.parsed <- getAndParseOSD('CROQUIB')
+extractHzData(x.parsed)
+
+# variation on type location
+x.parsed <- getAndParseOSD('ANAN')
+extractHzData(x.parsed)
+
 # multiple mention of "type location" 
 x.parsed <- getAndParseOSD('yutan')
 extractHzData(x.parsed)
