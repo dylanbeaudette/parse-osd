@@ -5,6 +5,11 @@ library(plyr)
 
 source('local_functions.R')
 
+# false-positives matched in RIC section
+# -> fix in post-processing SQL code
+x.parsed <- getAndParseOSD('humeston')
+extractHzData(x.parsed)
+
 # can't parse this: (10YR 3/1 moist or dry)
 x.parsed <- getAndParseOSD('salinas')
 extractHzData(x.parsed)

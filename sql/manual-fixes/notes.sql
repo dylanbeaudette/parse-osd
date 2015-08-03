@@ -34,11 +34,13 @@ DELETE FROM osd_colors WHERE series IN (SELECT DISTINCT series FROM fixed);
 INSERT INTO osd_colors
 SELECT * FROM fixed;
 
-
 -- investigate those series with hz data but no colors:
 -- SELECT series, count(series) from osd.osd_colors where matrix_wet_color_hue is null group by series having count(series) > 3 order by series;
 
-
+-- remove false-positive matches from RIC section:
+-- http://casoilresource.lawr.ucdavis.edu/sde/?series=humeston
+-- http://soilmap2-1.lawr.ucdavis.edu/soil_web/soil_profile.php?use_osd=1&database_type=SSURGO&depth_mode=mini&osd_series_override=humeston&cached=0
+DELETE FROM osd.osd_colors WHERE hzname = 'Thickness';
 
 
 
