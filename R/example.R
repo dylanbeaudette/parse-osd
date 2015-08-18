@@ -5,9 +5,9 @@ library(plyr)
 
 source('local_functions.R')
 
-# false-positives matched in RIC section
-# -> fix in post-processing SQL code
-x.parsed <- getAndParseOSD('humeston')
+
+# errors in OSD: "A1, A3--0 to 19 inches;"
+x.parsed <- getAndParseOSD('whitney')
 extractHzData(x.parsed)
 
 # can't parse this: (10YR 3/1 moist or dry)
@@ -16,6 +16,11 @@ extractHzData(x.parsed)
 
 # error in O horizon narrative
 x.parsed <- getAndParseOSD('CROQUIB')
+extractHzData(x.parsed)
+
+# false-positives matched in RIC section
+# -> fixed in post-processing SQL code
+x.parsed <- getAndParseOSD('humeston')
 extractHzData(x.parsed)
 
 # variation on type location
