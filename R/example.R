@@ -6,10 +6,17 @@ library(plyr)
 source('local_functions.R')
 
 
+# neutral hues
+x.parsed <- getAndParseOSD('Yorkville')
+extractHzData(x.parsed)
+
+# error in OSD, 'O' should be '0'
+x.parsed <- getAndParseOSD('clear lake')
+extractHzData(x.parsed)
+
 # error in OSD, 'O' should be '0'
 x.parsed <- getAndParseOSD('iron mountain')
 extractHzData(x.parsed)
-
 
 # errors in OSD: "A1, A3--0 to 19 inches;"
 x.parsed <- getAndParseOSD('whitney')

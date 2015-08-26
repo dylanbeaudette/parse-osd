@@ -79,9 +79,14 @@ DELETE FROM osd.osd_colors where series = 'IRON MOUNTAIN';
 INSERT INTO osd.osd_colors VALUES ('A', 0, 23, '10YR', 4, 2, '10YR', 3, 3, 'IRON MOUNTAIN');
 INSERT INTO osd.osd_colors VALUES ('R', 23, 23, NULL, NULL, NULL, NULL, NULL, NULL, 'IRON MOUNTAIN');
 
+-- solano
+UPDATE osd.osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'SOLANO' AND hzname = 'Btn';
 
+-- clear lake
+UPDATE osd.osd_colors SET matrix_dry_color_hue = 'N', matrix_dry_color_value = 4, matrix_dry_color_chroma = 0, matrix_wet_color_hue = 'N', matrix_wet_color_value = 4, matrix_wet_color_chroma = 0 WHERE series = 'CLEAR LAKE' AND matrix_dry_color_hue IS NULL;
 
-
+-- yorkville
+UPDATE osd.osd_colors SET matrix_dry_color_hue = 'N', matrix_dry_color_value = 4, matrix_dry_color_chroma = 0, matrix_wet_color_hue = 'N', matrix_wet_color_value = 4, matrix_wet_color_chroma = 0 WHERE series = 'YORKVILLE' AND matrix_dry_color_hue IS NULL;
 
 -- update index
 VACUUM ANALYZE osd.osd_on_file;

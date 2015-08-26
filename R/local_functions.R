@@ -106,11 +106,11 @@ extractHzData <- function(x.parsed) {
   # get all colors matching our rule, moist and dry and unknown, 5th column is moisture state
   # interpretation is tough when multiple colors / hz are given
   # single rule, with dry/moist state
-  color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\)\\s(dry|moist|)"
+  color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\)\\s(dry|moist|)"
   
   # detect moist and dry colors
-  dry.color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\)(?! moist)"
-  moist.color.rule <- "\\(([0-9]?[\\.]?[0-9][Y|R]+)([ ]+?[0-9])/([0-9])\\) moist"
+  dry.color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\)(?! moist)"
+  moist.color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\) moist"
   
   # ID actual lines of horizon information
   hz.idx <- unique(c(grep(hz.rule, tp), grep(hz.rule.no.bottom, tp)))
