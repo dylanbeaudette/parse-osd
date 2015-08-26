@@ -6,8 +6,18 @@ library(plyr)
 source('local_functions.R')
 
 
+# error in OSD, 'O' should be '0'
+x.parsed <- getAndParseOSD('iron mountain')
+extractHzData(x.parsed)
+
+
 # errors in OSD: "A1, A3--0 to 19 inches;"
 x.parsed <- getAndParseOSD('whitney')
+extractHzData(x.parsed)
+
+# "l" and "O" used instead of "1" and "0"
+# must fix OSD
+x.parsed <- getAndParseOSD('SIRRETTA')
 extractHzData(x.parsed)
 
 # can't parse this: (10YR 3/1 moist or dry)

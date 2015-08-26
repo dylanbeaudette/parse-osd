@@ -73,6 +73,15 @@ UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4,
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'RINCON' AND hzname = 'B3tca';
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 4, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 4 WHERE series = 'RINCON' AND hzname = 'Cca';
 
+-- iron mountain
+DELETE FROM osd.osd_colors where series = 'IRON MOUNTAIN';
+
+INSERT INTO osd.osd_colors VALUES ('A', 0, 23, '10YR', 4, 2, '10YR', 3, 3, 'IRON MOUNTAIN');
+INSERT INTO osd.osd_colors VALUES ('R', 23, 23, NULL, NULL, NULL, NULL, NULL, NULL, 'IRON MOUNTAIN');
+
+
+
+
 
 -- update index
 VACUUM ANALYZE osd.osd_on_file;
