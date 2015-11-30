@@ -6,6 +6,14 @@ library(plyr)
 source('local_functions.R')
 
 
+# typos and ?
+x.parsed <- getAndParseOSD('vance')
+extractHzData(x.parsed)
+
+# extra "----"
+x.parsed <- getAndParseOSD('Ravenrock')
+extractHzData(x.parsed)
+
 # neutral hues
 x.parsed <- getAndParseOSD('Yorkville')
 extractHzData(x.parsed)

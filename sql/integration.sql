@@ -2,6 +2,8 @@
 -- load parsed OSD data into SoilWeb
 --
 -- 2015-06-20: it appears that the "fixed" data from Skye (errors/fixed-2.csv) is no longer needed
+--
+-- 2015-11-30: set NULL bottom horizons to top + 1
 
 
 SET search_path TO osd, public;
@@ -43,6 +45,10 @@ CREATE INDEX osd_colors_series_idx ON osd_colors (series);
 --
 \i 'manual-fixes/notes.sql'
 
+--
+-- 2015-11-30: set NULL bottom horizons to top + 1
+--
+UPDATE osd.osd_colors SET bottom = top + 1 WHERE bottom IS NULL;
 
 -- create list of distinct series in or records
 DROP TABLE osd.osd_on_file;

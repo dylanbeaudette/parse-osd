@@ -68,9 +68,9 @@ extractHzData <- function(x.parsed) {
   #       "l" = "1"
   ## ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
   # detect horizons with both top and bottom depths
-  hz.rule <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?--?-?\\s?([O0-9.]+) to ([O0-9.]+) (in|inches|cm|centimeters)"
+  hz.rule <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?-+?\\s?([O0-9.]+) to ([O0-9.]+) (in|inches|cm|centimeters)"
   # detect horizons with no bottom depth
-  hz.rule.no.bottom <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?--?-?\\s?([0-9.]+) (in|inches|cm|centimeters)"
+  hz.rule.no.bottom <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?-+?\\s?([0-9.]+) (in|inches|cm|centimeters)"
   
   
   ## TODO: this doesn't work when only moist colors are specified (http://casoilresource.lawr.ucdavis.edu/sde/?series=canarsie)
