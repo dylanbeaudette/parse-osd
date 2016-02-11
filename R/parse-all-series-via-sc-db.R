@@ -18,9 +18,9 @@ l <- list()
 # resest fulltext SQL file
 unlink('fulltext-data.sql')
 cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql', append = TRUE)
-cat('CREATE TABLE osd.osd_fulltext;\n', file='fulltext-data.sql', append = TRUE)
+cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
 
-# for(i in x[sample(1:length(x), size = 100)]) {
+# for(i in x[sample(1:length(x), size = 10)]) {
 for(i in x) {
   print(i)
   # result is a list

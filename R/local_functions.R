@@ -18,9 +18,9 @@ seriesNameToURL <- function(s) {
   return(u)
 }
 
-## TODO: this may require proper escaping of quotes
+
 # get and convert HTML to text and then fulltext DB table record
-ConvertToFullTextRecord <- function(s, tablename='osd.OSD_fulltext') {
+ConvertToFullTextRecord <- function(s, tablename='osd.osd_fulltext') {
   # get HTML text content
   u <- seriesNameToURL(s)
   s.html.text <- html_text(read_html(u))
@@ -29,7 +29,9 @@ ConvertToFullTextRecord <- function(s, tablename='osd.OSD_fulltext') {
   s.html.text <- s.html.text[s.html.text != '']
   s.html.text <- paste(s.html.text, collapse = '\n')
   # convert into INSERT statement
-  res <- paste0('INSERT INTO ', tablename, ' VALUES ("', s, '",', '"', s.html.text, '");\n')
+  # note: single quotes escaped with $$:
+  # http://stackoverflow.com/questions/12316953/insert-varchar-with-single-quotes-in-postgresql
+  res <- paste0('INSERT INTO ', tablename, " VALUES ($$, ", s, "$$,", "$$", s.html.text, "$$);\n")
   return(res)
 }
 
