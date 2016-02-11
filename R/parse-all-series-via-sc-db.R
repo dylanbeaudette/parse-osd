@@ -2,6 +2,7 @@ library(stringi)
 library(httr)
 library(XML)
 library(plyr)
+library(rvest)
 
 source('local_functions.R')
 
@@ -14,15 +15,28 @@ x <- x$soilseriesname
 # init list to store results
 l <- list()
 
-# for(i in x[sample(1:length(x), size = 1000)]) {
+# resest fulltext SQL file
+unlink('fulltext-data.sql')
+cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql', append = TRUE)
+cat('CREATE TABLE osd.osd_fulltext;\n', file='fulltext-data.sql', append = TRUE)
+
+# for(i in x[sample(1:length(x), size = 100)]) {
 for(i in x) {
   print(i)
+  # result is a list
   x.parsed <- getAndParseOSD(i)
   # there are some OSDs that may not exist
   if(length(grep('Server Error', unlist(x.parsed))) > 0) 
     l[[i]] <- NULL
-  else
+  else {
+    # apped extracted data to our list
     l[[i]] <- extractHzData(x.parsed)
+    # get rendered HTML->text and save to file
+    x.text <- ConvertToFullTextRecord(i)
+    # append to file
+    cat(x.text, file = 'fulltext-data.sql', append = TRUE)
+  }
+    
 }
 
 

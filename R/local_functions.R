@@ -18,12 +18,28 @@ seriesNameToURL <- function(s) {
   return(u)
 }
 
+## TODO: this may require proper escaping of quotes
+# get and convert HTML to text and then fulltext DB table record
+ConvertToFullTextRecord <- function(s, tablename='OSD_fulltext') {
+  # get HTML text content
+  u <- seriesNameToURL(s)
+  s.html.text <- html_text(read_html(u))
+  # strip blank lines
+  s.html.text <- readLines(textConnection(s.html.text))
+  s.html.text <- s.html.text[s.html.text != '']
+  s.html.text <- paste(s.html.text, collapse = '\n')
+  # convert into INSERT statement
+  res <- paste0('INSERT INTO ', tablename, 'VALUES ("', s, '",', '"', s.html.text, '");\n')
+  return(res)
+}
+
 getAndParseOSD <- function(s) {
   # make URL
   u <- seriesNameToURL(s)
   
   # get HTML content
   g <- GET(u)
+  
   # convert to list
   x.parsed <- xmlToList(content(g, 'parsed'))
   

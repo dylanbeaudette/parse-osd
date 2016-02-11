@@ -16,3 +16,6 @@ This is an R version of the python implementation, much simpler to debug and doe
 6. typos are very hard to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 8. develop protocol for figuring out non-parsed records
+
+## Updates
+* 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching
