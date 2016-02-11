@@ -31,7 +31,7 @@ ConvertToFullTextRecord <- function(s, tablename='osd.osd_fulltext') {
   # convert into INSERT statement
   # note: single quotes escaped with $$:
   # http://stackoverflow.com/questions/12316953/insert-varchar-with-single-quotes-in-postgresql
-  res <- paste0('INSERT INTO ', tablename, " VALUES ($$, ", s, "$$,", "$$", s.html.text, "$$);\n")
+  res <- paste0('INSERT INTO ', tablename, " VALUES ($$", s, "$$,$$", s.html.text, "$$);\n")
   return(res)
 }
 

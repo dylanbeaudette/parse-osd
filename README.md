@@ -17,5 +17,8 @@ This is an R version of the python implementation, much simpler to debug and doe
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 8. develop protocol for figuring out non-parsed records
 
+# OSD Fulltext Searches
+Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
+
 ## Updates
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching
