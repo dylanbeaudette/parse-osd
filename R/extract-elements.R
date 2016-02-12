@@ -5,6 +5,8 @@
 x.parsed <- getAndParseOSD('cecil') # does work
 x.parsed <- getAndParseOSD('drummer') # dosn't work
 
+extractHzData(x.parsed)
+
 extractParaBlock(x.parsed, 'TYPICAL PEDON:')
 extractParaBlock(x.parsed, 'TYPE LOCATION:')
 extractParaBlock(x.parsed, 'RANGE IN CHARACTERISTICS:')
