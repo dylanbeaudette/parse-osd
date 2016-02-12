@@ -21,4 +21,5 @@ This is an R version of the python implementation, much simpler to debug and doe
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
 
 ## Updates
-* 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching
+* 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
+* 2016-02-11: chunking the OSDs into sections seems to work
