@@ -16,12 +16,30 @@ x <- x$soilseriesname
 l <- list()
 
 # resest fulltext SQL file
-unlink('fulltext-data.sql')
-cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql', append = TRUE)
+cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql')
 cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
 
-# for(i in x[sample(1:length(x), size = 10)]) {
-for(i in x) {
+## need to adjust fields manually as we edit
+c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
+
+cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
+cat('CREATE TABLE osd.osd_fulltext2 (
+series text, 
+typical_pedon text,
+type_location text,
+ric text,
+competing_series text,
+geog_location text,
+geog_assoc_soils text,
+drainage text,
+use_and_veg text,
+distribution text,
+remarks text
+    );\n', file='fulltext-section-data.sql', append = TRUE)
+
+
+for(i in x[sample(1:length(x), size = 10)]) {
+# for(i in x) {
   print(i)
   # result is a list
   x.parsed <- getAndParseOSD(i)
@@ -29,12 +47,14 @@ for(i in x) {
   if(length(grep('Server Error', unlist(x.parsed))) > 0) 
     l[[i]] <- NULL
   else {
-    # apped extracted data to our list
+    # append extracted data to our list
     l[[i]] <- extractHzData(x.parsed)
-    # get rendered HTML->text and save to file
+    # get rendered HTML->text and save to file 
     x.text <- ConvertToFullTextRecord(i)
-    # append to file
     cat(x.text, file = 'fulltext-data.sql', append = TRUE)
+    # split data into sections for fulltext search
+    x.sections <- ConvertToFullTextRecord2(x.parsed, series=i)
+    cat(x.sections, file = 'fulltext-section-data.sql', append = TRUE)
   }
     
 }

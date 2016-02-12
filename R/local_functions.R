@@ -1,4 +1,106 @@
 
+# remove URLS from parsed chunk
+stripURLs <- function(chunk.list) {
+  
+  # get chunk names
+  cn <- names(chunk.list)
+  
+  # remove link targets
+  for(i in seq_along(chunk.list)) {
+    # get current name
+    i.name <- cn[i]
+    # how many sub-elements
+    n <- length(chunk.list[[i]])
+    
+    # if there are more than 1 sub-elements apply recursively
+    if(n > 1)
+      chunk.list[[i]] <- stripURLs(chunk.list[[i]])
+    
+    # if there is a name
+    if(!is.null(i.name)) {
+      # check for link and remove it
+      if(i.name == 'a')
+        chunk.list[[i]][['.attrs']] <- NULL
+    }
+  } 
+  
+  return(chunk.list)
+}
+
+removeBlankLines <- function(chunk.list) {
+  # collapse all elements to text
+  chunk <- paste(unlist(chunk.list), collapse = '')
+  # extract lines and remove blank / NA lines
+  chunk.lines <- readLines(textConnection(chunk))
+  chunk.lines <- chunk.lines[which(chunk.lines != '')]
+  chunk.lines <- chunk.lines[which(!is.na(chunk.lines))]
+  return(chunk.lines)
+}
+
+# extract blocks defined by <p></p>
+# works: amador, auburn, cecil
+# doesn't work: drummer
+extractParaBlock <- function(x.parsed, block) {
+  idx <- which(sapply(x.parsed, function(i) length(grep(block, i, ignore.case = TRUE)) > 0))[1]
+  chunk.list <- x.parsed[[idx]]
+  chunk.list <- stripURLs(chunk.list)
+  # convert to lines and remove blank or NA lines
+  chunk.lines <- removeBlankLines(chunk.list)
+  # convert back to single chunk of text
+  chunk.text <- paste(chunk.lines, collapse = '')
+  return(chunk.text)
+}
+
+# check a line to see if any section titles are in it
+checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')) {
+  res <- sapply(sectionTitles, function(st) grepl(st, this.line, ignore.case = TRUE))
+  return(which(res))
+}
+
+# locate section line numbers
+findSectionIndices <- function(chunk.lines) {
+  l <- lapply(chunk.lines, checkSections)
+  indices <- which(sapply(l, function(i) length(i) > 0))
+  # copy over section names
+  names(indices) <- sapply(l[indices], function(i) names(i))
+  return(indices)
+}
+
+# extract sections
+extractSections <- function(x.parsed) {
+  chunk.list <- x.parsed
+  chunk.list <- stripURLs(chunk.list)
+  # convert to lines and remove blank or NA lines
+  chunk.lines <- removeBlankLines(chunk.list)
+  
+  # storage
+  l <- list()
+  
+  # locate section lines
+  # note: this will give values inclusive of the next section
+  section.locations <- findSectionIndices(chunk.lines)
+  section.names <- names(section.locations)
+    
+  # combine chunks into a list
+  for(i in 1:(length(section.locations) - 1)) {
+    this.name <- section.names[i]
+    start.line <- section.locations[i]
+    # this stop line overlaps with the start of the next, decrease index by 1
+    stop.line <- section.locations[i+1] - 1
+    # extract current chunk
+    chunk <- chunk.lines[start.line : stop.line]
+    # combine lines
+    chunk <- paste(chunk, collapse='')
+    # remove section name
+    chunk <- gsub(this.name, '', chunk)
+    # store
+    l[[this.name]] <- chunk
+  }
+  
+  return(l)
+}
+
+
 ## A helper function that tests whether an object is either NULL _or_ 
 ## a list of NULLs
 is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
@@ -34,6 +136,19 @@ ConvertToFullTextRecord <- function(s, tablename='osd.osd_fulltext') {
   res <- paste0('INSERT INTO ', tablename, " VALUES ($$", s, "$$,$$", s.html.text, "$$);\n")
   return(res)
 }
+
+# this convert parsed XML into an insert statement with data split by section
+ConvertToFullTextRecord2 <- function(x.parsed, series, tablename='osd.osd_fulltext2') {
+  sections <- extractSections(x.parsed)
+  
+  st <- c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
+  
+  # combine sections with $$ quoting
+  blob <- sapply(st, function(i) {paste0('$$', sections[[i]], '$$')})
+  res <- paste0('INSERT INTO ', tablename,  ' VALUES ( $$', series, '$$, ', paste(blob, collapse = ', '), ');\n')
+  return(res)
+}
+
 
 getAndParseOSD <- function(s) {
   # make URL
@@ -78,6 +193,14 @@ extractHzData <- function(x.parsed) {
   
   # split lines
   tp <- stri_split_lines(tp)[[1]]
+  
+  
+  
+#   ## NOT READY
+#   ## use new code for splitting blocks by section
+#   sections <- extractSections(x.parsed)
+#   tp <- sections[['TYPICAL PEDON:']] 
+#   
   
   ## REGEX rules
   ## TODO: combine top+bottom with top only rules
