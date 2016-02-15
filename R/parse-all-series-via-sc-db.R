@@ -1,3 +1,8 @@
+## 
+## for some reason this doesn't run on soilmap2-1
+##
+
+
 library(stringi)
 library(httr)
 library(XML)
@@ -38,23 +43,23 @@ remarks text
     );\n', file='fulltext-section-data.sql', append = TRUE)
 
 
-# for(i in x[sample(1:length(x), size = 10)]) {
-for(i in x) {
+for(i in x[sample(1:length(x), size = 100)]) {
+# for(i in x) {
   print(i)
   # result is a list
-  x.parsed <- getAndParseOSD(i)
+  i.lines <- try(getOSD(i), silent = TRUE)
   # there are some OSDs that may not exist
-  if(length(grep('Server Error', unlist(x.parsed))) > 0) 
+  if(class(i.lines) == 'try-error')
     l[[i]] <- NULL
   else {
     # append extracted data to our list
-    l[[i]] <- extractHzData(x.parsed)
+    l[[i]] <- extractHzData(i.lines)
     # get rendered HTML->text and save to file 
-    x.text <- ConvertToFullTextRecord(i)
-    cat(x.text, file = 'fulltext-data.sql', append = TRUE)
+    i.fulltext <- ConvertToFullTextRecord(i, i.lines)
+    cat(i.fulltext, file = 'fulltext-data.sql', append = TRUE)
     # split data into sections for fulltext search
-    x.sections <- ConvertToFullTextRecord2(x.parsed, series=i)
-    cat(x.sections, file = 'fulltext-section-data.sql', append = TRUE)
+    i.sections <- ConvertToFullTextRecord2(i, i.lines)
+    cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
   }
     
 }

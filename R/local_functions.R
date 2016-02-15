@@ -1,35 +1,6 @@
 
-# remove URLS from parsed chunk
-stripURLs <- function(chunk.list) {
-  
-  # get chunk names
-  cn <- names(chunk.list)
-  
-  # remove link targets
-  for(i in seq_along(chunk.list)) {
-    # get current name
-    i.name <- cn[i]
-    # how many sub-elements
-    n <- length(chunk.list[[i]])
-    
-    # if there are more than 1 sub-elements apply recursively
-    if(n > 1)
-      chunk.list[[i]] <- stripURLs(chunk.list[[i]])
-    
-    # if there is a name
-    if(!is.null(i.name)) {
-      # check for link and remove it
-      if(i.name == 'a')
-        chunk.list[[i]][['.attrs']] <- NULL
-    }
-  } 
-  
-  return(chunk.list)
-}
-
-removeBlankLines <- function(chunk.list) {
-  # collapse all elements to text
-  chunk <- paste(unlist(chunk.list), collapse = '')
+# remove blank lines from HTML text
+removeBlankLines <- function(chunk) {
   # extract lines and remove blank / NA lines
   chunk.lines <- readLines(textConnection(chunk))
   chunk.lines <- chunk.lines[which(chunk.lines != '')]
@@ -37,19 +8,6 @@ removeBlankLines <- function(chunk.list) {
   return(chunk.lines)
 }
 
-# extract blocks defined by <p></p>
-# works: amador, auburn, cecil
-# doesn't work: drummer
-extractParaBlock <- function(x.parsed, block) {
-  idx <- which(sapply(x.parsed, function(i) length(grep(block, i, ignore.case = TRUE)) > 0))[1]
-  chunk.list <- x.parsed[[idx]]
-  chunk.list <- stripURLs(chunk.list)
-  # convert to lines and remove blank or NA lines
-  chunk.lines <- removeBlankLines(chunk.list)
-  # convert back to single chunk of text
-  chunk.text <- paste(chunk.lines, collapse = '')
-  return(chunk.text)
-}
 
 # check a line to see if any section titles are in it
 checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')) {
@@ -66,13 +24,8 @@ findSectionIndices <- function(chunk.lines) {
   return(indices)
 }
 
-# extract sections
-extractSections <- function(x.parsed) {
-  chunk.list <- x.parsed
-  chunk.list <- stripURLs(chunk.list)
-  # convert to lines and remove blank or NA lines
-  chunk.lines <- removeBlankLines(chunk.list)
-  
+# extract sections from lines of OSD
+extractSections <- function(chunk.lines) {
   # storage
   l <- list()
   
@@ -101,16 +54,6 @@ extractSections <- function(x.parsed) {
 }
 
 
-## A helper function that tests whether an object is either NULL _or_ 
-## a list of NULLs
-is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
-
-## Recursively step down into list, removing all such objects 
-rmNullObs <- function(x) {
-  x <- Filter(Negate(is.NullOb), x)
-  lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
-}
-
 seriesNameToURL <- function(s) {
   base.url <- 'http://soilseriesdesc.sc.egov.usda.gov/OSD_Docs/'
   s <- toupper(s)
@@ -121,53 +64,46 @@ seriesNameToURL <- function(s) {
 }
 
 
-# get and convert HTML to text and then fulltext DB table record
-ConvertToFullTextRecord <- function(s, tablename='osd.osd_fulltext') {
-  # get HTML text content
-  u <- seriesNameToURL(s)
-  s.html.text <- html_text(read_html(u))
-  # strip blank lines
-  s.html.text <- readLines(textConnection(s.html.text))
-  s.html.text <- s.html.text[s.html.text != '']
-  s.html.text <- paste(s.html.text, collapse = '\n')
+# convert HTML text to fulltext DB table record
+ConvertToFullTextRecord <- function(s, s.lines, tablename='osd.osd_fulltext') {
+  # collapse to single chunk
+  s.text <- paste(s.lines, collapse = '\n')
   # convert into INSERT statement
   # note: single quotes escaped with $$:
   # http://stackoverflow.com/questions/12316953/insert-varchar-with-single-quotes-in-postgresql
-  res <- paste0('INSERT INTO ', tablename, " VALUES ($$", s, "$$,$$", s.html.text, "$$);\n")
+  res <- paste0('INSERT INTO ', tablename, " VALUES ($$", s, "$$,$$", s.text, "$$);\n")
   return(res)
 }
 
-# this convert parsed XML into an insert statement with data split by section
-ConvertToFullTextRecord2 <- function(x.parsed, series, tablename='osd.osd_fulltext2') {
-  sections <- extractSections(x.parsed)
+# convert HTML text to an insert statement with data split by section
+ConvertToFullTextRecord2 <- function(s, s.lines, tablename='osd.osd_fulltext2') {
+  # split sections to list, section titles hard-coded
+  sections <- extractSections(s.lines)
   
   st <- c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
   
   # combine sections with $$ quoting
   blob <- sapply(st, function(i) {paste0('$$', sections[[i]], '$$')})
-  res <- paste0('INSERT INTO ', tablename,  ' VALUES ( $$', series, '$$, ', paste(blob, collapse = ', '), ');\n')
+  res <- paste0('INSERT INTO ', tablename,  ' VALUES ( $$', s, '$$, ', paste(blob, collapse = ', '), ');\n')
   return(res)
 }
 
 
-getAndParseOSD <- function(s) {
+
+# get an OSD from HTML record, convert to lines of text (HTML stripped)
+getOSD <- function(s) {
   # make URL
   u <- seriesNameToURL(s)
-  
-  # get HTML content
-  g <- GET(u)
-  
-  # convert to list
-  x.parsed <- xmlToList(content(g, 'parsed'))
-  
-  # remove NULL elements
-  x.parsed <- rmNullObs(x.parsed$body)
-  
-  return(x.parsed)
+  # get HTML content and strip blank / NA lines
+  s.html.text <- html_text(read_html(u))
+  s.html.text <- removeBlankLines(s.html.text)
+  # done
+  return(s.html.text)
 }
 
 
-extractHzData <- function(x.parsed) {
+
+extractHzData <- function(s.lines) {
   options(stringsAsFactors=FALSE)
   
   ## NOTE: this limits false-positives, but is thrown-off by typos
@@ -175,9 +111,9 @@ extractHzData <- function(x.parsed) {
   # note: we are only keeping the first match
   ## TODO: relaxed matching required to catch typos...
   ## this part is the most likely to break
-  tp.start <- which(sapply(x.parsed, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
+  tp.start <- which(sapply(s.lines, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
   # the last element contains "TYPE LOCATION:" but no horizon data, may occur more than once in the document
-  tp.stop <- which(sapply(x.parsed, function(i) length(grep('(TY.*|PEDON)\\sLOC', i, ignore.case = TRUE)) > 0)) - 1
+  tp.stop <- which(sapply(s.lines, function(i) length(grep('(TY.*|PEDON)\\sLOC', i, ignore.case = TRUE)) > 0)) - 1
   
   ## TODO: bail out here if we cannot define the locations of horizon records
   if(is.na(tp.start) | length(tp.stop) < 1)
@@ -189,18 +125,18 @@ extractHzData <- function(x.parsed) {
   
   # combine into single string
   # note, this block of text is approximate
-  tp <- paste(unlist(x.parsed[tp.start:tp.stop]), collapse = '')
+  tp <- paste(unlist(s.lines[tp.start:tp.stop]), collapse = '')
   
   # split lines
   tp <- stri_split_lines(tp)[[1]]
   
   
   
-#   ## NOT READY
-#   ## use new code for splitting blocks by section
-#   sections <- extractSections(x.parsed)
-#   tp <- sections[['TYPICAL PEDON:']] 
-#   
+  ## NOT READY
+  ## use new code for splitting blocks by section
+  sections <- extractSections(s.lines)
+  tp <- sections[['TYPICAL PEDON:']] 
+  
   
   ## REGEX rules
   ## TODO: combine top+bottom with top only rules
@@ -227,8 +163,8 @@ extractHzData <- function(x.parsed) {
   
   ## TODO: test this
   # establist default encoding of colors
-  dry.is.default <- length(grep('for dry (soil|conditions)', paste(unlist(x.parsed), collapse=''), ignore.case = TRUE)) > 0
-  moist.is.default <- length(grep('for moist (soil|conditions)', paste(unlist(x.parsed), collapse=''), ignore.case = TRUE)) > 0
+  dry.is.default <- length(grep('for dry (soil|conditions)', paste(unlist(s.lines), collapse=''), ignore.case = TRUE)) > 0
+  moist.is.default <- length(grep('for moist (soil|conditions)', paste(unlist(s.lines), collapse=''), ignore.case = TRUE)) > 0
   
   if(dry.is.default)
     default.moisture.state <- 'dry'
@@ -349,3 +285,77 @@ extractHzData <- function(x.parsed) {
 
 
 
+## DEPRECIATED
+# # remove URLS from parsed chunk
+# stripURLs <- function(chunk.list) {
+#   
+#   # get chunk names
+#   cn <- names(chunk.list)
+#   
+#   # remove link targets
+#   for(i in seq_along(chunk.list)) {
+#     # get current name
+#     i.name <- cn[i]
+#     # how many sub-elements
+#     n <- length(chunk.list[[i]])
+#     
+#     # if there are more than 1 sub-elements apply recursively
+#     if(n > 1)
+#       chunk.list[[i]] <- stripURLs(chunk.list[[i]])
+#     
+#     # if there is a name
+#     if(!is.null(i.name)) {
+#       # check for link and remove it
+#       if(i.name == 'a')
+#         chunk.list[[i]][['.attrs']] <- NULL
+#     }
+#   } 
+#   
+#   return(chunk.list)
+# }
+
+## DEPRECIATED
+# # extract blocks defined by <p></p>
+# # works: amador, auburn, cecil
+# # doesn't work: drummer
+# extractParaBlock <- function(x.parsed, block) {
+#   idx <- which(sapply(x.parsed, function(i) length(grep(block, i, ignore.case = TRUE)) > 0))[1]
+#   chunk.list <- x.parsed[[idx]]
+#   chunk.list <- stripURLs(chunk.list)
+#   # convert to lines and remove blank or NA lines
+#   chunk.lines <- removeBlankLines(chunk.list)
+#   # convert back to single chunk of text
+#   chunk.text <- paste(chunk.lines, collapse = '')
+#   return(chunk.text)
+# }
+
+## DEPRECIATED 
+# ## A helper function that tests whether an object is either NULL _or_ 
+# ## a list of NULLs
+# is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
+# 
+# ## Recursively step down into list, removing all such objects 
+# rmNullObs <- function(x) {
+#   x <- Filter(Negate(is.NullOb), x)
+#   lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
+# }
+
+## 2016-02-14: DEPRECIATED
+# getAndParseOSD <- function(s) {
+#   # make URL
+#   u <- seriesNameToURL(s)
+#   
+#   # get HTML content
+#   g <- GET(u)
+#   
+#   # convert to list
+#   ## 2016-02-13: this isn't working...
+#   x.parsed <- xmlToList(content(g, 'parsed'))
+#   ## does this result in the same data?  NO
+#   # x.parsed <- xmlToList(htmlTreeParse(content(g, 'parsed')))
+#   
+#   # remove NULL elements
+#   x.parsed <- rmNullObs(x.parsed$body)
+#   
+#   return(x.parsed)
+# }
