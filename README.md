@@ -9,6 +9,7 @@ This is an R version of the python implementation, much simpler to debug and doe
 
 ## OSD Fulltext Searches
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
+Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/sections.php).
 
 ## TODO
 1. figure out how to deal with multiple colors
@@ -23,13 +24,14 @@ Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd
 ## Updates
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
 * 2016-02-11: chunking the OSDs into sections seems to work
+* 2016-02-15: horizon parsing now uses chunked sections
 
 ## Examples
 
 ### Parsed horizons
 ```
-x.parsed <- getAndParseOSD(i)
-extractHzData(x.parsed)
+x <- getOSD('cecil')
+extractHzData(x)
 
   name top bottom dry_hue dry_value dry_chroma moist_hue moist_value moist_chroma
 1   Ap   0     20      NA        NA         NA      10YR           4            4
@@ -41,8 +43,8 @@ extractHzData(x.parsed)
 
 ### Parsed Sections
 ```
-x.parsed <- getAndParseOSD(i)
-extractSections(x.parsed)
+x <- getOSD('cecil')
+extractSections(x)
 
 $`TYPICAL PEDON:`
 [1] " Cecil sandy loam--forested. (Colors are for moist soil unless otherwise stated.)Ap--0 to 8 inches; dark yellowish brown (10YR 4/4) sandy loam; weak medium granular structure; very friable; slightly acid; abrupt smooth boundary. (2 to 8 inches thick)Bt1--8 to 26 inches; red (10R 4/8) clay; moderate medium subangular blocky structure; firm; sticky, plastic; common clay films on faces of peds; few fine flakes of mica; strongly acid; gradual wavy boundary.Bt2--26 to 42 inches; red (10R 4/8) clay; few fine prominent yellowish red (5YR 5/8) mottles; moderate medium subangular blocky structure; firm; sticky, plastic; common clay films on faces of peds; few fine flakes of mica; very strongly acid; gradual wavy boundary. (Combined thickness of the Bt horizon is 24 to 50 inches)BC--42 to 50 inches; red (2.5YR 4/8) clay loam; few distinct yellowish red (5YR 5/8) mottles; weak medium subangular blocky structure; friable; few fine flakes of mica; very strongly acid; gradual wavy boundary. (0 to 10 inches thick)C--50 to 80 inches; red (2.5YR 4/8) loam saprolite; common medium distinct pale yellow (2.5Y 7/4) and common distinct brown (7.5YR 5/4) mottles; massive; very friable; few fine flakes of mica; very strongly acid."

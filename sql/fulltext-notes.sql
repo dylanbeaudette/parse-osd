@@ -40,9 +40,58 @@
  
  
  
- -- example queries
- 
+ -- chain multiple full text searches and rankings
+ -- not very fast
+SELECT series, sum(rank) as score
+FROM (
 SELECT * 
+FROM (
+	SELECT ts_rank(to_tsvector('english', typical_pedon), to_tsquery('english', 'Bt')) AS rank, 
+	series
+	FROM osd.osd_fulltext2
+	WHERE to_tsvector('english', typical_pedon) @@ to_tsquery('english', 'Bt')
+	ORDER BY rank DESC
+	LIMIT 20
+	) as a
+UNION ALL
+SELECT * 
+FROM (
+	SELECT ts_rank(to_tsvector('english', ric), to_tsquery('english', 'Bt')) AS rank, 
+	series
+	FROM osd.osd_fulltext2
+	WHERE to_tsvector('english', ric) @@ to_tsquery('english', 'Bt')
+	ORDER BY rank DESC
+	LIMIT 20
+	) as a
+UNION ALL
+SELECT * 
+FROM (
+	SELECT ts_rank(to_tsvector('english', competing_series), to_tsquery('english', 'argillic')) AS rank, 
+	series
+	FROM osd.osd_fulltext2
+	WHERE to_tsvector('english', competing_series) @@ to_tsquery('english', 'argillic')
+	ORDER BY rank DESC
+	LIMIT 20
+	) as a
+UNION ALL
+SELECT * 
+FROM (
+	SELECT ts_rank(to_tsvector('english', geog_location), to_tsquery('english', 'hills')) AS rank, 
+	series
+	FROM osd.osd_fulltext2
+	WHERE to_tsvector('english', geog_location) @@ to_tsquery('english', 'hills')
+	ORDER BY rank DESC
+	LIMIT 20
+	) as a
+) as b
+GROUP BY series
+ORDER BY score DESC;
+
+
+
+
+
+SELECT series
 FROM osd_fulltext2 
 WHERE to_tsvector('english', geog_assoc_soils) @@ to_tsquery('english', 'amador');
 
