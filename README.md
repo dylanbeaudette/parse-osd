@@ -17,14 +17,14 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 3. test new color-parsing code
 4. how can we match neutral colors: (N 2.5/)
 5. how can we extract mixed horizons?: '3E & Bt' ?
-6. typos are very hard to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
+6. typos are very hard to fix [Ackwater](http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER), [TUSKAHOMA](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 8. develop protocol for figuring out non-parsed records
 
 ## Updates
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
 * 2016-02-11: chunking the OSDs into sections seems to work
-* 2016-02-15: horizon parsing now uses chunked sections
+* 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
 
 ## Examples
 

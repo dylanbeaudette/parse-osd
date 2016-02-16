@@ -1,6 +1,6 @@
 
 ##
-## note: new section-based parsing cannot deal well with typos
+## note: new section-based parsing cannot deal well with typos (TUSKAHOMA)
 ##
 
 library(stringi)
@@ -11,8 +11,8 @@ library(rvest)
 source('local_functions.R')
 
 # toggles
-remakeTables <- FALSE
-testingMode <- FALSE
+remakeTables <- TRUE
+testingMode <- TRUE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -53,9 +53,7 @@ remarks text
 if(testingMode)
   x <- x[sample(1:length(x), size = 100)]
 
-## temp
-for(i in x[18977:length(x)]) {
-# for(i in x) {
+for(i in x) {
   print(i)
   # result is a list
   i.lines <- try(getOSD(i), silent = TRUE)

@@ -9,6 +9,7 @@ removeBlankLines <- function(chunk) {
 }
 
 
+## TODO: use a set of titles and regular expressions to deal with typos
 # check a line to see if any section titles are in it
 checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON', 'TYPE LOCATION', 'RANGE IN CHARACTERISTICS', 'COMPETING SERIES', 'GEOGRAPHIC SETTING', 'GEOGRAPHICALLY ASSOCIATED SOILS', 'DRAINAGE AND PERMEABILITY', 'USE AND VEGETATION', 'DISTRIBUTION AND EXTENT', 'REMARKS')) {
   res <- sapply(sectionTitles, function(st) grepl(st, this.line, ignore.case = TRUE))
