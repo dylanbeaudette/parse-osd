@@ -6,6 +6,10 @@ library(rvest)
 
 source('local_functions.R')
 
+# toggles
+remakeTables <- FALSE
+testingMode <- FALSE
+
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
 
@@ -15,15 +19,16 @@ x <- x$soilseriesname
 # init list to store results
 l <- list()
 
-# resest fulltext SQL file
-cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql')
-cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
-
-## need to adjust fields manually as we edit
-c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
-
-cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
-cat('CREATE TABLE osd.osd_fulltext2 (
+if(remakeTables) {
+  # resest fulltext SQL file
+  cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql')
+  cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
+  
+  ## need to adjust fields manually as we edit
+  c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
+  
+  cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
+  cat('CREATE TABLE osd.osd_fulltext2 (
 series text, 
 typical_pedon text,
 type_location text,
@@ -36,10 +41,17 @@ use_and_veg text,
 distribution text,
 remarks text
     );\n', file='fulltext-section-data.sql', append = TRUE)
+}
 
 
-# for(i in x[sample(1:length(x), size = 100)]) {
-for(i in x) {
+
+# cut down to a smaller number of series for testing
+if(testingMode)
+  x <- x[sample(1:length(x), size = 100)]
+
+## temp
+for(i in x[18976:length(x), ]) {
+# for(i in x) {
   print(i)
   # result is a list
   i.lines <- try(getOSD(i), silent = TRUE)
