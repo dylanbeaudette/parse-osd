@@ -1,4 +1,8 @@
 
+##
+## note: new section-based parsing cannot deal well with typos
+##
+
 library(stringi)
 library(httr)
 library(plyr)

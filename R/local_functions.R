@@ -136,7 +136,7 @@ extractHzData <- function(s.lines) {
   ## this will not work in the presence of typos
   # use new code for splitting blocks by section, lines from each section are not joined
   sections <- extractSections(s.lines, collapseLines = FALSE)
-  tp <- sections[['TYPICAL PEDON:']] 
+  tp <- sections[['TYPICAL PEDON']] 
   
   
   ## REGEX rules
