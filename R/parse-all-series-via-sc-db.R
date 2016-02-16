@@ -38,8 +38,8 @@ remarks text
     );\n', file='fulltext-section-data.sql', append = TRUE)
 
 
-for(i in x[sample(1:length(x), size = 100)]) {
-# for(i in x) {
+# for(i in x[sample(1:length(x), size = 100)]) {
+for(i in x) {
   print(i)
   # result is a list
   i.lines <- try(getOSD(i), silent = TRUE)
