@@ -1,11 +1,6 @@
-## 
-## for some reason this doesn't run on soilmap2-1
-##
-
 
 library(stringi)
 library(httr)
-library(XML)
 library(plyr)
 library(rvest)
 
