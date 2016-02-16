@@ -50,7 +50,7 @@ if(testingMode)
   x <- x[sample(1:length(x), size = 100)]
 
 ## temp
-for(i in x[18976:length(x)]) {
+for(i in x[18977:length(x)]) {
 # for(i in x) {
   print(i)
   # result is a list
