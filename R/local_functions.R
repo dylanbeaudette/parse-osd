@@ -10,7 +10,7 @@ removeBlankLines <- function(chunk) {
 
 
 # check a line to see if any section titles are in it
-checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')) {
+checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON', 'TYPE LOCATION', 'RANGE IN CHARACTERISTICS', 'COMPETING SERIES', 'GEOGRAPHIC SETTING', 'GEOGRAPHICALLY ASSOCIATED SOILS', 'DRAINAGE AND PERMEABILITY', 'USE AND VEGETATION', 'DISTRIBUTION AND EXTENT', 'REMARKS')) {
   res <- sapply(sectionTitles, function(st) grepl(st, this.line, ignore.case = TRUE))
   return(which(res))
 }
@@ -81,7 +81,7 @@ ConvertToFullTextRecord2 <- function(s, s.lines, tablename='osd.osd_fulltext2') 
   # split sections to list, section titles hard-coded
   sections <- extractSections(s.lines)
   
-  st <- c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
+  st <- c('TYPICAL PEDON', 'TYPE LOCATION', 'RANGE IN CHARACTERISTICS', 'COMPETING SERIES', 'GEOGRAPHIC SETTING', 'GEOGRAPHICALLY ASSOCIATED SOILS', 'DRAINAGE AND PERMEABILITY', 'USE AND VEGETATION', 'DISTRIBUTION AND EXTENT', 'REMARKS')
   
   # combine sections with $$ quoting
   blob <- sapply(st, function(i) {paste0('$$', sections[[i]], '$$')})
