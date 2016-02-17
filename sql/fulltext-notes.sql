@@ -1,9 +1,9 @@
-
--- load data
+-- note: these files will contain non-ASCII characters
+-- load after setting:  set client_encoding to 'latin1'
 -- psql -U postgres ssurgo_combined < fulltext-data.sql
 -- psql -U postgres ssurgo_combined < fulltext-section-data.sql
-
-
+ 
+ 
  set search_path to osd, public;
  \timing
  

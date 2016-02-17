@@ -19,10 +19,12 @@ x <- x$soilseriesname
 # init list to store results
 l <- list()
 
+# note: we have to explicitly set the file encoding, as there are non-ASCII characters in these files.. not sure why
 if(remakeTables) {
   # resest fulltext SQL file
   cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql')
   cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
+  cat("set client_encoding to 'latin1 ;\n", file='fulltext-data.sql', append = TRUE)
   
   ## need to adjust fields manually as we edit
   cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
@@ -39,6 +41,7 @@ use_and_veg text,
 distribution text,
 remarks text
     );\n', file='fulltext-section-data.sql', append = TRUE)
+  cat("set client_encoding to 'latin1 ;\n", file='fulltext-section-data.sql', append = TRUE)
 }
 
 
