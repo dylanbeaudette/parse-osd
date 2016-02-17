@@ -1,8 +1,4 @@
 
-##
-## note: new section-based parsing cannot deal well with typos (TUSKAHOMA)
-##
-
 library(stringi)
 library(httr)
 library(plyr)

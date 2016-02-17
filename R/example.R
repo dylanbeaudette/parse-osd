@@ -1,114 +1,117 @@
 library(stringi)
 library(httr)
-library(XML)
+library(rvest)
 library(plyr)
 
 source('local_functions.R')
 
 
+x <- getOSD('TUSKAHOMA')
+extractHzData(x)
+
 # typos and ?
-x.parsed <- getAndParseOSD('vance')
-extractHzData(x.parsed)
+x <- getOSD('vance')
+extractHzData(x)
 
 # extra "----"
-x.parsed <- getAndParseOSD('Ravenrock')
-extractHzData(x.parsed)
+x <- getOSD('Ravenrock')
+extractHzData(x)
 
 # neutral hues
-x.parsed <- getAndParseOSD('Yorkville')
-extractHzData(x.parsed)
+x <- getOSD('Yorkville')
+extractHzData(x)
 
 # error in OSD, 'O' should be '0'
-x.parsed <- getAndParseOSD('clear lake')
-extractHzData(x.parsed)
+x <- getOSD('clear lake')
+extractHzData(x)
 
 # error in OSD, 'O' should be '0'
-x.parsed <- getAndParseOSD('iron mountain')
-extractHzData(x.parsed)
+x <- getOSD('iron mountain')
+extractHzData(x)
 
 # errors in OSD: "A1, A3--0 to 19 inches;"
-x.parsed <- getAndParseOSD('whitney')
-extractHzData(x.parsed)
+x <- getOSD('whitney')
+extractHzData(x)
 
 # "l" and "O" used instead of "1" and "0"
 # must fix OSD
-x.parsed <- getAndParseOSD('SIRRETTA')
-extractHzData(x.parsed)
+x <- getOSD('SIRRETTA')
+extractHzData(x)
 
 # can't parse this: (10YR 3/1 moist or dry)
-x.parsed <- getAndParseOSD('salinas')
-extractHzData(x.parsed)
+x <- getOSD('salinas')
+extractHzData(x)
 
 # error in O horizon narrative
-x.parsed <- getAndParseOSD('CROQUIB')
-extractHzData(x.parsed)
+x <- getOSD('CROQUIB')
+extractHzData(x)
 
 # false-positives matched in RIC section
 # -> fixed in post-processing SQL code
-x.parsed <- getAndParseOSD('humeston')
-extractHzData(x.parsed)
+x <- getOSD('humeston')
+extractHzData(x)
 
 # variation on type location
-x.parsed <- getAndParseOSD('ANAN')
-extractHzData(x.parsed)
+x <- getOSD('ANAN')
+extractHzData(x)
 
 # multiple mention of "type location" 
-x.parsed <- getAndParseOSD('yutan')
-extractHzData(x.parsed)
+x <- getOSD('yutan')
+extractHzData(x)
 
 # multiple mention of "type location" 
-x.parsed <- getAndParseOSD('filbert')
-extractHzData(x.parsed)
+x <- getOSD('filbert')
+extractHzData(x)
 
 # "E and Bt1"
-x.parsed <- getAndParseOSD('colonie')
-extractHzData(x.parsed)
+x <- getOSD('colonie')
+extractHzData(x)
 
 # some problematic OSDs
-x.parsed <- getAndParseOSD('pardee')
-extractHzData(x.parsed)
+x <- getOSD('pardee')
+extractHzData(x)
 
 ## TODO, still not correct as all colors are moist
-x.parsed <- getAndParseOSD('canarsie')
-extractHzData(x.parsed)
+x <- getOSD('canarsie')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('capay')
-extractHzData(x.parsed)
+x <- getOSD('capay')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('academy')
-extractHzData(x.parsed)
+x <- getOSD('academy')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('newot')
-extractHzData(x.parsed)
+x <- getOSD('newot')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('flagspring')
-extractHzData(x.parsed)
+x <- getOSD('flagspring')
+extractHzData(x)
 
 # error in "TYPICAL PEDON" heading
-x.parsed <- getAndParseOSD('ACKWATER')
-extractHzData(x.parsed)
+x <- getOSD('ACKWATER')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('CASA GRANDE')
-extractHzData(x.parsed)
+x <- getOSD('CASA GRANDE')
+extractHzData(x)
 
 # return NULL
 # strange notation: A [A1]--0 to 10 cm (4 inches)
-x.parsed <- getAndParseOSD('RAPSON')
-extractHzData(x.parsed)
+x <- getOSD('RAPSON')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('KILFOIL')
-extractHzData(x.parsed)
+x <- getOSD('KILFOIL')
+extractHzData(x)
 
-x.parsed <- getAndParseOSD('MENTZ')
-extractHzData(x.parsed)
+x <- getOSD('MENTZ')
+extractHzData(x)
 
 # non-standard TYPE LOCATION heading 
-x.parsed <- getAndParseOSD('ALBUS')
-extractHzData(x.parsed)
+x <- getOSD('ALBUS')
+extractHzData(x)
 
 # no OSD document
-x.parsed <- getAndParseOSD('YALE')
-extractHzData(x.parsed)
+x <- getOSD('YALE')
+extractHzData(x)
 
 
 

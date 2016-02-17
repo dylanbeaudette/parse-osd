@@ -1,4 +1,19 @@
 
+## temporary hack: storing as a global variable
+# values are REGEX that try to accomodate typos
+# names are the proper section names
+.sectionData <<- c('TYPICAL PEDON'='TY.*\\s?PEDON', 
+                 'TYPE LOCATION'='TY.*\\s?LOCATION', 
+                 'RANGE IN CHARACTERISTICS'='RANGE IN CHARACTERISTICS', 
+                 'COMPETING SERIES'='COMPETING SERIES', 
+                 'GEOGRAPHIC SETTING'='GEOGRAPHIC SETTING',
+                 'GEOGRAPHICALLY ASSOCIATED SOILS'='GEOGRAPHICALLY ASSOCIATED SOILS',
+                 'DRAINAGE AND PERMEABILITY'='DRAINAGE AND PERMEABILITY',
+                 'USE AND VEGETATION'='USE AND VEGETATION',
+                 'DISTRIBUTION AND EXTENT'='DISTRIBUTION AND EXTENT',
+                 'REMARKS'='REMARKS'
+                 )
+
 # remove blank lines from HTML text
 removeBlankLines <- function(chunk) {
   # extract lines and remove blank / NA lines
@@ -11,8 +26,8 @@ removeBlankLines <- function(chunk) {
 
 ## TODO: use a set of titles and regular expressions to deal with typos
 # check a line to see if any section titles are in it
-checkSections <- function(this.line, sectionTitles=c('TYPICAL PEDON', 'TYPE LOCATION', 'RANGE IN CHARACTERISTICS', 'COMPETING SERIES', 'GEOGRAPHIC SETTING', 'GEOGRAPHICALLY ASSOCIATED SOILS', 'DRAINAGE AND PERMEABILITY', 'USE AND VEGETATION', 'DISTRIBUTION AND EXTENT', 'REMARKS')) {
-  res <- sapply(sectionTitles, function(st) grepl(st, this.line, ignore.case = TRUE))
+checkSections <- function(this.line) {
+  res <- sapply(.sectionData, function(st) grepl(st, this.line, ignore.case = TRUE))
   return(which(res))
 }
 
@@ -82,7 +97,7 @@ ConvertToFullTextRecord2 <- function(s, s.lines, tablename='osd.osd_fulltext2') 
   # split sections to list, section titles hard-coded
   sections <- extractSections(s.lines)
   
-  st <- c('TYPICAL PEDON', 'TYPE LOCATION', 'RANGE IN CHARACTERISTICS', 'COMPETING SERIES', 'GEOGRAPHIC SETTING', 'GEOGRAPHICALLY ASSOCIATED SOILS', 'DRAINAGE AND PERMEABILITY', 'USE AND VEGETATION', 'DISTRIBUTION AND EXTENT', 'REMARKS')
+  st <- names(.sectionData)
   
   # combine sections with $$ quoting
   blob <- sapply(st, function(i) {paste0('$$', sections[[i]], '$$')})
