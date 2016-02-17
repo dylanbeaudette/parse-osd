@@ -92,11 +92,13 @@ ConvertToFullTextRecord <- function(s, s.lines, tablename='osd.osd_fulltext') {
   return(res)
 }
 
+
 # convert HTML text to an insert statement with data split by section
 ConvertToFullTextRecord2 <- function(s, s.lines, tablename='osd.osd_fulltext2') {
   # split sections to list, section titles hard-coded
   sections <- extractSections(s.lines)
   
+  # get names of all sections
   st <- names(.sectionData)
   
   # combine sections with $$ quoting
@@ -123,34 +125,8 @@ getOSD <- function(s) {
 extractHzData <- function(s.lines) {
   options(stringsAsFactors=FALSE)
   
-#   ## NOTE: this limits false-positives, but is thrown-off by typos
-#   # where does the typical pedon block start?
-#   # note: we are only keeping the first match
-#   ## TODO: relaxed matching required to catch typos...
-#   ## this part is the most likely to break
-#   tp.start <- which(sapply(s.lines, function(i) length(grep('TY.*\\sPEDON', i, ignore.case = TRUE)) > 0))[1] + 1
-#   # the last element contains "TYPE LOCATION:" but no horizon data, may occur more than once in the document
-#   tp.stop <- which(sapply(s.lines, function(i) length(grep('(TY.*|PEDON)\\sLOC', i, ignore.case = TRUE)) > 0)) - 1
-#   
-#   ## TODO: bail out here if we cannot define the locations of horizon records
-#   if(is.na(tp.start) | length(tp.stop) < 1)
-#     return(NULL)
-#   
-#   # there could be multiple places in which the type location is mentioned
-#   if(length(tp.stop) > 1)
-#     tp.stop <- max(tp.stop)
-#   
-#   # combine into single string
-#   # note, this block of text is approximate
-#   tp <- paste(unlist(s.lines[tp.start:tp.stop]), collapse = '')
-#   
-#   # split lines
-#   tp <- stri_split_lines(tp)[[1]]
-  
-  
-  
-  ## this will not work in the presence of typos
-  # use new code for splitting blocks by section, lines from each section are not joined
+  # this will not work in the presence of typos
+  # new code for splitting blocks by section, lines from each section are not joined
   sections <- extractSections(s.lines, collapseLines = FALSE)
   tp <- sections[['TYPICAL PEDON']] 
   

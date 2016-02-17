@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- TRUE
+testingMode <- FALSE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -25,8 +25,6 @@ if(remakeTables) {
   cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
   
   ## need to adjust fields manually as we edit
-  c('TYPICAL PEDON:', 'TYPE LOCATION:', 'RANGE IN CHARACTERISTICS:', 'COMPETING SERIES:', 'GEOGRAPHIC SETTING:', 'GEOGRAPHICALLY ASSOCIATED SOILS:', 'DRAINAGE AND PERMEABILITY:', 'USE AND VEGETATION:', 'DISTRIBUTION AND EXTENT:', 'REMARKS:')
-  
   cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
   cat('CREATE TABLE osd.osd_fulltext2 (
 series text, 
@@ -56,15 +54,21 @@ for(i in x) {
   # there are some OSDs that may not exist
   if(class(i.lines) == 'try-error')
     l[[i]] <- NULL
+  
   else {
-    # append extracted data to our list
-    l[[i]] <- extractHzData(i.lines)
+    # append extracted data to our list, catch errors related to parsing sections
+    hz.data <- try(extractHzData(i.lines))
+    if(class(hz.data) != 'try-error')
+      l[[i]] <- hz.data
+    
     # get rendered HTML->text and save to file 
     i.fulltext <- ConvertToFullTextRecord(i, i.lines)
     cat(i.fulltext, file = 'fulltext-data.sql', append = TRUE)
-    # split data into sections for fulltext search
-    i.sections <- ConvertToFullTextRecord2(i, i.lines)
-    cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
+    
+    # split data into sections for fulltext search, catch errors related to parsing sections
+    i.sections <- try(ConvertToFullTextRecord2(i, i.lines))
+    if(class(i.sections) != 'try-error')
+      cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
   }
     
 }
