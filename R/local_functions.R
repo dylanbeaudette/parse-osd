@@ -2,8 +2,8 @@
 ## temporary hack: storing as a global variable
 # values are REGEX that try to accomodate typos
 # names are the proper section names
-.sectionData <<- c('TYPICAL PEDON'='TY.*\\s?PEDON', 
-                 'TYPE LOCATION'='TY.*\\s?LOCATION', 
+.sectionData <<- c('TYPICAL PEDON'='TYP.*\\s?PEDON', 
+                 'TYPE LOCATION'='TYP.*\\s?LOCATION', 
                  'RANGE IN CHARACTERISTICS'='RANGE IN CHARACTERISTICS', 
                  'COMPETING SERIES'='COMPETING SERIES', 
                  'GEOGRAPHIC SETTING'='GEOGRAPHIC SETTING',
@@ -176,7 +176,8 @@ extractHzData <- function(s.lines) {
   # get all colors matching our rule, moist and dry and unknown, 5th column is moisture state
   # interpretation is tough when multiple colors / hz are given
   # single rule, with dry/moist state
-  color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\)\\s(dry|moist|)"
+  # note that dry/moist may not always be present
+  color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\)\\s?(dry|moist|)"
   
   # detect moist and dry colors
   dry.color.rule <- "\\(([0-9]?[\\.]?[0-9]?[Y|R|N]+)([ ]+?[0-9])/([0-9])\\)(?! moist)"

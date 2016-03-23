@@ -25,6 +25,7 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
 * 2016-02-11: chunking the OSDs into sections seems to work
 * 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
+* 2016-03-23: small adjustments to colors parsing, should be a little more inclusive
 
 ## Examples
 

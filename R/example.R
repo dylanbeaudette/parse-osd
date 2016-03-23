@@ -5,6 +5,17 @@ library(plyr)
 
 source('local_functions.R')
 
+## known working
+extractHzData(getOSD('amador'))
+extractHzData(getOSD('pentz'))
+
+
+# missing dry/moist flag
+x <- getOSD('ADAMSTOWN')
+extractHzData(x)
+
+x <- getOSD('Funkstown')
+extractHzData(x)
 
 x <- getOSD('TUSKAHOMA')
 extractHzData(x)
