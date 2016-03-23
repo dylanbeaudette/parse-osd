@@ -1,6 +1,12 @@
 # parse-osd
 Code related to parsing of OSD text/HTML files.
 
+# Updates
+* 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
+* 2016-02-11: chunking the OSDs into sections seems to work
+* 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
+* 2016-03-23: small adjustments to color parsing, should be a little more inclusive
+
 # python (no longer used)
 This is the current python implementation, not perfect, but gets 95% of the data I need. Currently relies on a directory of ALL OSD text files, the bash shell, and python. It is a huge pain in the neck to try and get the entire set of OSD text files.
 
@@ -11,6 +17,9 @@ This is an R version of the python implementation, much simpler to debug and doe
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
 Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/sections.php).
 
+## Estimation of Missing Dry / Moist Colors
+details pending...
+
 ## TODO
 1. figure out how to deal with multiple colors
 2. combine top+bottom with top only rules, ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
@@ -20,12 +29,6 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 6. typos are very hard to fix [Ackwater](http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER), [TUSKAHOMA](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 8. develop protocol for figuring out non-parsed records
-
-## Updates
-* 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
-* 2016-02-11: chunking the OSDs into sections seems to work
-* 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
-* 2016-03-23: small adjustments to colors parsing, should be a little more inclusive
 
 ## Examples
 

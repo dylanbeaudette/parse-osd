@@ -11,8 +11,8 @@ library(hexbin)
 d <- read.csv('parsed-data.csv.gz', stringsAsFactors=TRUE)
 
 # tabulate missing data
-# ~ 56986 dry records
-# ~ 18513 moist records
+# ~ 52327 dry records
+# ~ 16961 moist records
 summary(d)
 
 # model for predicting moist from dry colors
@@ -30,8 +30,17 @@ dv.rf <- randomForest(dry_value ~ moist_value + moist_chroma + moist_hue, data=d
 dc.rf <- randomForest(dry_chroma ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
 
 # check, results seem OK
+
+## RF model
 hexbinplot(predict(mv.rf, newdata=d) ~ d$moist_value)
 hexbinplot(predict(dv.rf, newdata=d) ~ d$dry_value)
+
+## linear model
+hexbinplot(predict(l.v, newdata=d) ~ d$moist_value)
+
+# check correlation
+cor(predict(mv.rf, newdata=d), d$moist_value, use = 'complete.obs')
+cor(predict(l.v, newdata=d), d$moist_value, use = 'complete.obs')
 
 
 # fill missing data:
@@ -57,6 +66,7 @@ d$name <- as.character(d$name)
 d$seriesname <- as.character(d$seriesname)
 
 # tabulate missing data
+# 12221 records
 # ~ 25-75% reduction in NA
 summary(d)
 
