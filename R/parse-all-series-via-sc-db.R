@@ -13,11 +13,18 @@ testingMode <- FALSE
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
 
+# keep only those records that are established or tentative
+x <- subset(x, subset= series_status != 'inactive')
+
 # keep just the series names 
 x <- x$soilseriesname
 
 # init list to store results
 l <- list()
+
+# init list to store log
+parseLog <- list()
+
 
 # note: we have to explicitly set the file encoding, as there are non-ASCII characters in these files.. not sure why
 if(remakeTables) {
@@ -39,7 +46,9 @@ geog_assoc_soils text,
 drainage text,
 use_and_veg text,
 distribution text,
-remarks text
+remarks text,
+established text,
+additional_data text
     );\n', file='fulltext-section-data.sql', append = TRUE)
   cat("set client_encoding to 'latin1 ;\n", file='fulltext-section-data.sql', append = TRUE)
 }
@@ -55,36 +64,61 @@ for(i in x) {
   # result is a list
   i.lines <- try(getOSD(i), silent = TRUE)
   # there are some OSDs that may not exist
-  if(class(i.lines) == 'try-error')
+  if(class(i.lines) == 'try-error') {
     l[[i]] <- NULL
+    parseLog[[i]][['sections']] <- FALSE
+    parseLog[[i]][['hz-data']] <- FALSE
+  }
+    
   
   else {
-    # append extracted data to our list, catch errors related to parsing sections
-    hz.data <- try(extractHzData(i.lines))
-    if(class(hz.data) != 'try-error')
-      l[[i]] <- hz.data
     
+    ## no logging, this usually works fine
     # get rendered HTML->text and save to file 
     i.fulltext <- ConvertToFullTextRecord(i, i.lines)
     cat(i.fulltext, file = 'fulltext-data.sql', append = TRUE)
     
     # split data into sections for fulltext search, catch errors related to parsing sections
     i.sections <- try(ConvertToFullTextRecord2(i, i.lines))
-    if(class(i.sections) != 'try-error')
+    if(class(i.sections) != 'try-error') {
       cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
+      parseLog[[i]][['sections']] <- TRUE
+      
+    } else {
+      parseLog[[i]][['sections']] <- FALSE
+    }
+      
+    
+    # append extracted data to our list, catch errors related to parsing sections
+    hz.data <- try(extractHzData(i.lines))
+    if(class(hz.data) != 'try-error') {
+      l[[i]] <- hz.data
+      parseLog[[i]][['hz-data']] <- TRUE
+      
+    } else {
+      parseLog[[i]][['hz-data']] <- FALSE
+    }
+    
   }
     
 }
 
 
-# convert parsed series data to DF and save
+## TODO, do some basic error-checking on typos in the hue
+
+# format and write-out logfile
+logdata <- ldply(parseLog)
+write.csv(logdata, file='logfile.csv', row.names=FALSE)
+
+# convert parsed horizon data to DF and save
 d <- ldply(l)
 d$seriesname <- d$.id
 d$.id <- NULL
-
-## TODO, do some basic error-checking on typos in the hue
-
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
+
+
+
+
 
 # ID those series that were not parsed
 series.not.parsed <- setdiff(x, unique(d$seriesname))

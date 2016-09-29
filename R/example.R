@@ -5,124 +5,142 @@ library(plyr)
 
 source('local_functions.R')
 
+testIt <- function(x) {
+  res <- getOSD(x)
+  l <- list()
+  l[['sections']] <- extractSections(res)
+  l[['section-indices']] <- findSectionIndices(res)
+  l[['hz-data']] <- extractHzData(res)
+  return(l)
+}
+
+
 ## known working
 extractHzData(getOSD('amador'))
 extractHzData(getOSD('pentz'))
 
 
+## no OSD..
+testIt('FUCHES')
+
+# white-space in front of section names: fixed
+testIt('BRYMAN')
+
 # missing dry/moist flag
-x <- getOSD('ADAMSTOWN')
-extractHzData(x)
+testIt('ADAMSTOWN')
+extractSections(x)
 
-x <- getOSD('Funkstown')
-extractHzData(x)
 
-x <- getOSD('TUSKAHOMA')
-extractHzData(x)
+testIt('Funkstown')
+
+
+# section names have no spaces...
+testIt('TUSKAHOMA')
+
 
 # typos and ?
-x <- getOSD('vance')
-extractHzData(x)
+testIt('vance')
+
 
 # extra "----"
-x <- getOSD('Ravenrock')
-extractHzData(x)
+testIt('Ravenrock')
+
 
 # neutral hues
-x <- getOSD('Yorkville')
-extractHzData(x)
+testIt('Yorkville')
+
 
 # error in OSD, 'O' should be '0'
-x <- getOSD('clear lake')
-extractHzData(x)
+testIt('clear lake')
+
 
 # error in OSD, 'O' should be '0'
-x <- getOSD('iron mountain')
-extractHzData(x)
+testIt('iron mountain')
+
 
 # errors in OSD: "A1, A3--0 to 19 inches;"
-x <- getOSD('whitney')
-extractHzData(x)
+testIt('whitney')
+
 
 # "l" and "O" used instead of "1" and "0"
 # must fix OSD
-x <- getOSD('SIRRETTA')
-extractHzData(x)
+testIt('SIRRETTA')
+
 
 # can't parse this: (10YR 3/1 moist or dry)
-x <- getOSD('salinas')
-extractHzData(x)
+testIt('salinas')
+
 
 # error in O horizon narrative
-x <- getOSD('CROQUIB')
-extractHzData(x)
+testIt('CROQUIB')
+
 
 # false-positives matched in RIC section
 # -> fixed in post-processing SQL code
-x <- getOSD('humeston')
-extractHzData(x)
+testIt('humeston')
+
 
 # variation on type location
-x <- getOSD('ANAN')
-extractHzData(x)
+testIt('ANAN')
+
 
 # multiple mention of "type location" 
-x <- getOSD('yutan')
-extractHzData(x)
+testIt('yutan')
+
 
 # multiple mention of "type location" 
-x <- getOSD('filbert')
-extractHzData(x)
+testIt('filbert')
+
 
 # "E and Bt1"
-x <- getOSD('colonie')
-extractHzData(x)
+testIt('colonie')
+
 
 # some problematic OSDs
-x <- getOSD('pardee')
-extractHzData(x)
+testIt('pardee')
+
 
 ## TODO, still not correct as all colors are moist
-x <- getOSD('canarsie')
-extractHzData(x)
+testIt('canarsie')
 
-x <- getOSD('capay')
-extractHzData(x)
 
-x <- getOSD('academy')
-extractHzData(x)
+testIt('capay')
 
-x <- getOSD('newot')
-extractHzData(x)
 
-x <- getOSD('flagspring')
-extractHzData(x)
+testIt('academy')
+
+
+testIt('newot')
+
+
+testIt('flagspring')
+
 
 # error in "TYPICAL PEDON" heading
-x <- getOSD('ACKWATER')
-extractHzData(x)
+testIt('ACKWATER')
 
-x <- getOSD('CASA GRANDE')
-extractHzData(x)
+
+testIt('CASA GRANDE')
+
 
 # return NULL
 # strange notation: A [A1]--0 to 10 cm (4 inches)
-x <- getOSD('RAPSON')
-extractHzData(x)
+testIt('RAPSON')
 
-x <- getOSD('KILFOIL')
-extractHzData(x)
 
-x <- getOSD('MENTZ')
-extractHzData(x)
+testIt('KILFOIL')
+
+
+testIt('MENTZ')
+
 
 # non-standard TYPE LOCATION heading 
-x <- getOSD('ALBUS')
-extractHzData(x)
+testIt('ALBUS')
+
 
 # no OSD document
-x <- getOSD('YALE')
-extractHzData(x)
+testIt('YALE')
+
 
 
 

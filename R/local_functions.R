@@ -2,16 +2,22 @@
 ## temporary hack: storing as a global variable
 # values are REGEX that try to accomodate typos
 # names are the proper section names
-.sectionData <<- c('TYPICAL PEDON'='TYP.*\\s?PEDON', 
-                 'TYPE LOCATION'='TYP.*\\s?LOCATION', 
-                 'RANGE IN CHARACTERISTICS'='RANGE IN CHARACTERISTICS', 
-                 'COMPETING SERIES'='COMPETING SERIES', 
-                 'GEOGRAPHIC SETTING'='GEOGRAPHIC SETTING',
-                 'GEOGRAPHICALLY ASSOCIATED SOILS'='GEOGRAPHICALLY ASSOCIATED SOILS',
-                 'DRAINAGE AND PERMEABILITY'='DRAINAGE AND PERMEABILITY',
-                 'USE AND VEGETATION'='USE AND VEGETATION',
-                 'DISTRIBUTION AND EXTENT'='DISTRIBUTION AND EXTENT',
-                 'REMARKS'='REMARKS'
+
+## TODO: 
+# consider anchoring all to left-side + optional white-space
+# "TYPICAL PEDON" REGEX is too greedy
+.sectionData <<- c('TYPICAL PEDON'='^\\s?TYP.*\\s?PEDON', 
+                 'TYPE LOCATION'='^\\s?TYP.*\\s?LOCATION', 
+                 'RANGE IN CHARACTERISTICS'='^\\s?RANGE IN CHARACTERISTICS', 
+                 'COMPETING SERIES'='^\\s?COMPETING SERIES', 
+                 'GEOGRAPHIC SETTING'='^\\s?GEOGRAPHIC SETTING',
+                 'GEOGRAPHICALLY ASSOCIATED SOILS'='^\\s?GEOGRAPHICALLY ASSOCIATED SOILS',
+                 'DRAINAGE AND PERMEABILITY'='^\\s?DRAINAGE AND PERMEABILITY',
+                 'USE AND VEGETATION'='^\\s?USE AND VEGETATION',
+                 'DISTRIBUTION AND EXTENT'='^\\s?DISTRIBUTION AND EXTENT',
+                 'REMARKS'='^\\s?REMARKS',
+                 'SERIES ESTABLISHED'='^\\s?SERIES ESTABLISHED',
+                 'ADDITIONAL DATA'='^\\s?ADDITIONAL DATA'
                  )
 
 # remove blank lines from HTML text
@@ -122,6 +128,7 @@ getOSD <- function(s) {
 
 
 
+## TODO: this is wasteful as we don't need to parse the entire OSD, retain sections from previous operation
 extractHzData <- function(s.lines) {
   options(stringsAsFactors=FALSE)
   
