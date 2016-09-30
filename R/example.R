@@ -21,11 +21,11 @@ extractHzData(getOSD('pentz'))
 
 
 
+# "TYPICAL PEDON;"
+testIt('NEISSENBERG')
 
-
+# funky white space
 testIt('ODESSA')
-
-
 
 ## multiple matches for typical pedon
 testIt('CAJON')

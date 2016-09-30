@@ -95,7 +95,7 @@ for(i in x) {
     if(class(hz.data) != 'try-error') {
       l[[i]] <- hz.data
       # NULL results means that there was a parse error
-      parseLog[[i]][['hz-data']] <- is.null(hz.data)
+      parseLog[[i]][['hz-data']] <- ! is.null(hz.data)
     }
     
   }

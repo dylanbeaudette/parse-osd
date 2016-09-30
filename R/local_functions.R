@@ -6,7 +6,7 @@
 ## TODO: 
 # consider anchoring all to left-side + optional white-space
 # "TYPICAL PEDON" REGEX is too greedy
-.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-]? ', 
+.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]? ', 
                  'TYPE LOCATION'='^\\s*TYP.*\\sLOCATION[:]? ', 
                  'RANGE IN CHARACTERISTICS'='^\\s*RANGE IN CHARACTERISTICS[:]? ', 
                  'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
