@@ -91,7 +91,7 @@ for(i in x) {
     
     # append extracted data to our list, catch errors related to parsing sections
     hz.data <- try(extractHzData(i.lines))
-    if(class(hz.data) != 'try-error') {
+    if(class(hz.data) != 'try-error' || is.null(hz.data)) {
       l[[i]] <- hz.data
       parseLog[[i]][['hz-data']] <- TRUE
       
@@ -123,6 +123,7 @@ write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 # ID those series that were not parsed
 series.not.parsed <- setdiff(x, unique(d$seriesname))
 
+cat(series.not.parsed, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
 
 
 

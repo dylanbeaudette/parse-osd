@@ -20,6 +20,14 @@ extractHzData(getOSD('amador'))
 extractHzData(getOSD('pentz'))
 
 
+
+testIt('EASTBUTTE')
+
+
+
+## multiple matches for typical pedon
+testIt('CAJON')
+
 ## no OSD..
 testIt('FUCHES')
 
