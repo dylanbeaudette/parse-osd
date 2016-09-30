@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- TRUE
+testingMode <- FALSE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
