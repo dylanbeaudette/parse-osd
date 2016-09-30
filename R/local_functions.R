@@ -6,7 +6,7 @@
 ## TODO: 
 # consider anchoring all to left-side + optional white-space
 # "TYPICAL PEDON" REGEX is too greedy
-.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:]? ', 
+.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-]? ', 
                  'TYPE LOCATION'='^\\s*TYP.*\\sLOCATION[:]? ', 
                  'RANGE IN CHARACTERISTICS'='^\\s*RANGE IN CHARACTERISTICS[:]? ', 
                  'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
@@ -139,15 +139,18 @@ extractHzData <- function(s.lines) {
   
   
   ## REGEX rules
+  # http://regexr.com/
   ## TODO: combine top+bottom with top only rules
   # TODO: allow for OCR errors:
   #       "O" = "0"
   #       "l" = "1"
   ## ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
   # detect horizons with both top and bottom depths
-  hz.rule <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?-+?\\s?([O0-9.]+) to ([O0-9.]+) (in|inches|cm|centimeters)"
+  # hz.rule <- "^\\s*?([\\^\\'\\/a-zA-Z0-9]+)\\s?-+?\\s?([O0-9.]+)\\s+?to\\s+?([O0-9.]+)\\s+?(in|inches|cm|centimeters)"
+  hz.rule <- "([\\^\\'\\/a-zA-Z0-9]+)\\s*-+\\s*([O0-9.]+)\\s*?to\\s+?([O0-9.]+)\\s+?(in|inches|cm|centimeters)"
+  
   # detect horizons with no bottom depth
-  hz.rule.no.bottom <- "^\\s*([\\^\\'\\/a-zA-Z0-9]+)\\s?-+?\\s?([0-9.]+) (in|inches|cm|centimeters)"
+  hz.rule.no.bottom <- "([\\^\\'\\/a-zA-Z0-9]+)\\s*-+?\\s*([0-9.]+)\\s+?(in|inches|cm|centimeters)"
   
   
   ## TODO: this doesn't work when only moist colors are specified (http://casoilresource.lawr.ucdavis.edu/sde/?series=canarsie)

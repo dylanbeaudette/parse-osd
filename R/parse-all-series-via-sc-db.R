@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- FALSE
+testingMode <- TRUE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -91,12 +91,11 @@ for(i in x) {
     
     # append extracted data to our list, catch errors related to parsing sections
     hz.data <- try(extractHzData(i.lines))
-    if(class(hz.data) != 'try-error' || is.null(hz.data)) {
+    # try-error means no OSD
+    if(class(hz.data) != 'try-error') {
       l[[i]] <- hz.data
-      parseLog[[i]][['hz-data']] <- TRUE
-      
-    } else {
-      parseLog[[i]][['hz-data']] <- FALSE
+      # NULL results means that there was a parse error
+      parseLog[[i]][['hz-data']] <- is.null(hz.data)
     }
     
   }
@@ -108,7 +107,7 @@ for(i in x) {
 
 # format and write-out logfile
 logdata <- ldply(parseLog)
-write.csv(logdata, file='logfile.csv', row.names=FALSE)
+write.csv(logdata, file=paste0('logfile-', Sys.Date(), '.csv'), row.names=FALSE)
 
 # convert parsed horizon data to DF and save
 d <- ldply(l)
@@ -117,7 +116,8 @@ d$.id <- NULL
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
 
-
+prop.table(table(logdata$sections))
+prop.table(table(logdata$`hz-data`))
 
 
 # ID those series that were not parsed

@@ -21,7 +21,9 @@ extractHzData(getOSD('pentz'))
 
 
 
-testIt('EASTBUTTE')
+
+
+testIt('ODESSA')
 
 
 
@@ -139,6 +141,7 @@ testIt('RAPSON')
 testIt('KILFOIL')
 
 
+# "TYPICAL PEDON-"
 testIt('MENTZ')
 
 
