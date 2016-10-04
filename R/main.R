@@ -16,3 +16,9 @@ source('predict-missing-colors.R')
 # 3. send to SoilWeb
 
 # 4. re-load data: see sql/ dir in this repo
+
+
+
+# stats
+x <- read.csv('logfile-2016-10-04.csv', stringsAsFactors = FALSE)
+table(x$sections)
