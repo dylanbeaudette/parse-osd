@@ -1,3 +1,8 @@
+##
+## this is likely much faster run on SoilWeb, consider splitting into chunks via gnu parallel
+## ~ 166 series / minute
+## 
+
 
 # 1. get / parse data
 source('parse-all-series-via-sc-db.R')

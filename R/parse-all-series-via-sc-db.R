@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- TRUE
+testingMode <- FALSE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -57,7 +57,7 @@ additional_data text
 
 # cut down to a smaller number of series for testing
 if(testingMode)
-  x <- x[sample(1:length(x), size = 100)]
+  x <- x[sample(1:length(x), size = 500)]
 
 for(i in x) {
   print(i)
