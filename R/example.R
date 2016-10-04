@@ -29,6 +29,7 @@ testIt('URLAND')
 # fixed
 # multiple, exact matches for typical pedon
 testIt('MANASTASH')
+testIt('KEAA')
 
 # missing "TYPICAL PEDON"
 testIt('ARIEL')
