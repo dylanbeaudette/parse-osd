@@ -4,6 +4,9 @@
 -- 2015-06-20: it appears that the "fixed" data from Skye (errors/fixed-2.csv) is no longer needed
 --
 -- 2015-11-30: set NULL bottom horizons to top + 1
+--
+-- 2016-10-03: no longer using manual fixes from Skye, removed most manual fixes from bottom of this script
+--
 
 
 SET search_path TO osd, public;
@@ -35,15 +38,6 @@ UPDATE osd.osd_colors SET series = UPPER(series);
 -- index
 CREATE INDEX osd_colors_series_idx ON osd_colors (series);
 
--- 
--- QA/QC
--- 
-\i 'find-errors.sql'
-
---
--- apply manual fixes from Skye
---
-\i 'manual-fixes/notes.sql'
 
 --
 -- 2015-11-30: set NULL bottom horizons to top + 1
@@ -68,33 +62,28 @@ GRANT SELECT ON osd.osd_on_file TO soil;
 
 
 --
+-- 2016-10-03: working on removing all manual fixes from SQL...
+-- 
 -- manual fixes
 --
 
 -- rincon
-INSERT INTO osd_colors VALUES ('Ap',0,10,'10YR',4,1,'10YR',3,1,'RINCON');
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 1, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 1 WHERE series = 'RINCON' AND hzname = 'A12';
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 2, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 2 WHERE series = 'RINCON' AND hzname = 'B21t';
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 2, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 2 WHERE series = 'RINCON' AND hzname = 'B22t';
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'RINCON' AND hzname = 'B3tca';
 UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 4, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 4 WHERE series = 'RINCON' AND hzname = 'Cca';
 
--- iron mountain
-DELETE FROM osd.osd_colors where series = 'IRON MOUNTAIN';
-
-INSERT INTO osd.osd_colors VALUES ('A', 0, 23, '10YR', 4, 2, '10YR', 3, 3, 'IRON MOUNTAIN');
-INSERT INTO osd.osd_colors VALUES ('R', 23, 23, NULL, NULL, NULL, NULL, NULL, NULL, 'IRON MOUNTAIN');
 
 -- solano
 UPDATE osd.osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'SOLANO' AND hzname = 'Btn';
 
--- clear lake
-UPDATE osd.osd_colors SET matrix_dry_color_hue = 'N', matrix_dry_color_value = 4, matrix_dry_color_chroma = 0, matrix_wet_color_hue = 'N', matrix_wet_color_value = 4, matrix_wet_color_chroma = 0 WHERE series = 'CLEAR LAKE' AND matrix_dry_color_hue IS NULL;
-
--- yorkville
-UPDATE osd.osd_colors SET matrix_dry_color_hue = 'N', matrix_dry_color_value = 4, matrix_dry_color_chroma = 0, matrix_wet_color_hue = 'N', matrix_wet_color_value = 4, matrix_wet_color_chroma = 0 WHERE series = 'YORKVILLE' AND matrix_dry_color_hue IS NULL;
 
 -- update index
 VACUUM ANALYZE osd.osd_on_file;
 VACUUM ANALYZE osd.osd_colors;
 
+-- 
+-- QA/QC: this is done manually
+-- 
+-- \i 'find-errors.sql'

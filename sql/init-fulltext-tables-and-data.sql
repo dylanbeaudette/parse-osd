@@ -1,5 +1,8 @@
--- note: these files will contain non-ASCII characters
+-- note: these files will contain non-ASCII characters and some syntax errors
 -- the .sql files set encoding before inserts
+--
+-- iconv -c fulltext-section-data.sql > fulltext-section-data-clean && mv fulltext-section-data-clean fulltext-section-data.sql
+--
 -- psql -U postgres ssurgo_combined < fulltext-data.sql
 -- psql -U postgres ssurgo_combined < fulltext-section-data.sql
  
@@ -32,6 +35,8 @@
  CREATE INDEX osd_use_and_veg_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', use_and_veg));
  CREATE INDEX osd_distribution_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', distribution));
  CREATE INDEX osd_remarks_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', remarks));
+ CREATE INDEX osd_established_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', established));
+ CREATE INDEX osd_additional_data_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', additional_data));
  
  VACUUM ANALYZE osd_fulltext2 ;
  -- permissions

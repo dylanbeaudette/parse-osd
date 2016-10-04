@@ -1,1 +1,2 @@
-2015-06-20: still need to apply manual fixes from Skye-- these are mostly related to typos and parsing problems
+
+these are identified via SQL, could probably do better in R
