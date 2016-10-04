@@ -2,6 +2,7 @@
 Code related to parsing of OSD text/HTML files.
 
 # Updates
+* 2016-10-04: more chunking, better REGEX, logging of missing (3% have 404 errors) vs. un-parsed OSDs (29 series)
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
 * 2016-02-11: chunking the OSDs into sections seems to work
 * 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
