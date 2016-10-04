@@ -30,38 +30,22 @@ removeBlankLines <- function(chunk) {
 }
 
 
-## note: this can match multiple occurences, check for this later on
-# check a line to see if any section titles are in it
-checkSections <- function(this.line) {
-  res <- sapply(.sectionData, function(st) grepl(st, this.line, ignore.case = TRUE))
-  return(which(res))
-}
+
 
 # locate section line numbers
 findSectionIndices <- function(chunk.lines) {
-  # note: this should return a vector, not a list
-  l <- lapply(chunk.lines, checkSections)
-  indices <- which(sapply(l, function(i) length(i) > 0))
+  # result is a list, sometimes a section REGEX will match multiple lines
+  s <- lapply(.sectionData, function(st) grep(st, chunk.lines, ignore.case = TRUE))
   
-  # copy over section names
-  section.names <- sapply(l[indices], function(i) names(i))
-  names(indices) <- section.names
+  # filter out sections with no matches
+  match.idx <- which(sapply(s, function(i) length(i) > 0))
+  s <- s[match.idx]
   
-  # search for multiple occurences: common with "TYPICAL PEDON"
-  tab <- which(table(section.names) > 1)
-  if(length(tab) > 0) {
-    # iterate over duplicates
-    for(i.dupe in names(tab)) {
-      idx <- which(section.names == i.dupe)
-      # keep only the first occurence
-      i.temp <- indices[-idx]
-      i.temp <- c(i.temp, indices[min(idx)])
-      indices <- i.temp
-    }
-    
-    # re-sort indices
-    indices <- indices[order(indices)]
-  }
+  # keep the first match
+  indices <- sapply(s, function(i) i[1])
+  
+  # get set of section names with parsed data
+  section.names <- names(indices)
   
   return(indices)
 }

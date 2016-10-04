@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- FALSE
+testingMode <- TRUE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -108,13 +108,18 @@ for(i in x) {
 
 ## TODO, do some basic error-checking on typos in the hue
 
-## parseLog is not formatted properly for these series
-# DOCENA    GAVERS TUSKAHOMA     VELOW 
-# 5927      7934     22063     22443 
 
-
-# format and write-out logfile
+# convert log to DF
 logdata <- ldply(parseLog)
+
+# 98% sections parsed
+# prop.table(table(sapply(parseLog, function(i) i[['sections']])))
+# prop.table(table(sapply(parseLog, function(i) i[['hz-data']])))
+
+prop.table(table(logdata$sections))
+prop.table(table(logdata$`hz-data`))
+
+# save dated log file
 write.csv(logdata, file=paste0('logfile-', Sys.Date(), '.csv'), row.names=FALSE)
 
 # convert parsed horizon data to DF and save
@@ -122,15 +127,6 @@ d <- ldply(l)
 d$seriesname <- d$.id
 d$.id <- NULL
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
-
-
-# 97% sections parsed
-prop.table(table(sapply(parseLog, function(i) i[['sections']])))
-prop.table(table(sapply(parseLog, function(i) i[['hz-data']])))
-
-prop.table(table(logdata$sections))
-prop.table(table(logdata$`hz-data`))
-
 
 # ID those series that were not parsed
 parse.errors <- logdata$.id[which(! logdata$`hz-data` & logdata$sections)]
