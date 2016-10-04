@@ -91,11 +91,14 @@ for(i in x) {
     
     # append extracted data to our list, catch errors related to parsing sections
     hz.data <- try(extractHzData(i.lines))
+    
+    ## TODO: this isn't likely correct
+    # NULL results means that there was a parse error
+    parseLog[[i]][['hz-data']] <- ! is.null(hz.data)
+    
     # try-error means no OSD
     if(class(hz.data) != 'try-error') {
       l[[i]] <- hz.data
-      # NULL results means that there was a parse error
-      parseLog[[i]][['hz-data']] <- ! is.null(hz.data)
     }
     
   }
@@ -104,6 +107,11 @@ for(i in x) {
 
 
 ## TODO, do some basic error-checking on typos in the hue
+
+## parseLog is not formatted properly for these series
+# DOCENA    GAVERS TUSKAHOMA     VELOW 
+# 5927      7934     22063     22443 
+
 
 # format and write-out logfile
 logdata <- ldply(parseLog)
@@ -116,14 +124,18 @@ d$.id <- NULL
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
 
+# 97% sections parsed
+prop.table(table(sapply(parseLog, function(i) i[['sections']])))
+prop.table(table(sapply(parseLog, function(i) i[['hz-data']])))
+
 prop.table(table(logdata$sections))
 prop.table(table(logdata$`hz-data`))
 
 
 # ID those series that were not parsed
-series.not.parsed <- setdiff(x, unique(d$seriesname))
+parse.errors <- logdata$.id[which(! logdata$`hz-data` & logdata$sections)]
 
-cat(series.not.parsed, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
+cat(parse.errors, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
 
 
 

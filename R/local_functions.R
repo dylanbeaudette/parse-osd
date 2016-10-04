@@ -6,8 +6,8 @@
 ## TODO: 
 # consider anchoring all to left-side + optional white-space
 # "TYPICAL PEDON" REGEX is too greedy
-.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]? ', 
-                 'TYPE LOCATION'='^\\s*TYP.*\\sLOCATION[:]? ', 
+.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]?\\s?', 
+                 'TYPE LOCATION'='^\\s*TYPE\\sLOCATION[:]?\\s?', 
                  'RANGE IN CHARACTERISTICS'='^\\s*RANGE IN CHARACTERISTICS[:]? ', 
                  'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
                  'GEOGRAPHIC SETTING'='^\\s*GEOGRAPHIC SETTING[:]? ',
@@ -30,7 +30,7 @@ removeBlankLines <- function(chunk) {
 }
 
 
-## TODO: use a set of titles and regular expressions to deal with typos
+## note: this can match multiple occurences, check for this later on
 # check a line to see if any section titles are in it
 checkSections <- function(this.line) {
   res <- sapply(.sectionData, function(st) grepl(st, this.line, ignore.case = TRUE))
@@ -39,10 +39,30 @@ checkSections <- function(this.line) {
 
 # locate section line numbers
 findSectionIndices <- function(chunk.lines) {
+  # note: this should return a vector, not a list
   l <- lapply(chunk.lines, checkSections)
   indices <- which(sapply(l, function(i) length(i) > 0))
+  
   # copy over section names
-  names(indices) <- sapply(l[indices], function(i) names(i))
+  section.names <- sapply(l[indices], function(i) names(i))
+  names(indices) <- section.names
+  
+  # search for multiple occurences: common with "TYPICAL PEDON"
+  tab <- which(table(section.names) > 1)
+  if(length(tab) > 0) {
+    # iterate over duplicates
+    for(i.dupe in names(tab)) {
+      idx <- which(section.names == i.dupe)
+      # keep only the first occurence
+      i.temp <- indices[-idx]
+      i.temp <- c(i.temp, indices[min(idx)])
+      indices <- i.temp
+    }
+    
+    # re-sort indices
+    indices <- indices[order(indices)]
+  }
+  
   return(indices)
 }
 

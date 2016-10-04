@@ -20,6 +20,23 @@ extractHzData(getOSD('amador'))
 extractHzData(getOSD('pentz'))
 
 
+testIt('ESTES')
+
+# fixed
+# multiple matches in type location
+testIt('URLAND')
+
+# fixed
+# multiple, exact matches for typical pedon
+testIt('MANASTASH')
+
+# missing "TYPICAL PEDON"
+testIt('ARIEL')
+testIt('PACKSADDLE')
+
+# no white space, fixed
+# "TYPICAL PEDON:"
+testIt('dinuba')
 
 # "TYPICAL PEDON;"
 testIt('NEISSENBERG')
