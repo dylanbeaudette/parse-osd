@@ -17,6 +17,10 @@ This is an R version of the python implementation, much simpler to debug and doe
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
 Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/sections.php).
 
+### TODO
+1. some of the section chunks have SQL syntax errors, ~ 5-10 records
+2. there are some non-ASCII characters present
+
 ## Estimation of Missing Dry / Moist Colors
 details pending...
 
@@ -28,7 +32,6 @@ details pending...
 5. how can we extract mixed horizons?: '3E & Bt' ?
 6. typos are very hard to fix [Ackwater](http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER), [TUSKAHOMA](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
 7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
-8. develop protocol for figuring out non-parsed records
 
 ## Examples
 
