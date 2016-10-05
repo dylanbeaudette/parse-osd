@@ -30,13 +30,13 @@ parseLog <- list()
 if(remakeTables) {
   # resest fulltext SQL file
   cat('DROP TABLE osd.osd_fulltext;\n', file='fulltext-data.sql')
-  cat('CREATE TABLE osd.osd_fulltext (series text, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
+  cat('CREATE TABLE osd.osd_fulltext (series citext, fulltext text);\n', file='fulltext-data.sql', append = TRUE)
   cat("set client_encoding to 'latin1 ;\n", file='fulltext-data.sql', append = TRUE)
   
   ## need to adjust fields manually as we edit
   cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
   cat('CREATE TABLE osd.osd_fulltext2 (
-series text, 
+series citext, 
 typical_pedon text,
 type_location text,
 ric text,
