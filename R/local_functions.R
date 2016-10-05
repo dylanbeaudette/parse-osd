@@ -30,8 +30,6 @@ removeBlankLines <- function(chunk) {
 }
 
 
-
-
 # locate section line numbers
 findSectionIndices <- function(chunk.lines) {
   # result is a list, sometimes a section REGEX will match multiple lines
@@ -126,6 +124,8 @@ getOSD <- function(s) {
   # get HTML content and strip blank / NA lines
   s.html.text <- html_text(read_html(u))
   s.html.text <- removeBlankLines(s.html.text)
+  # strip double quotes by converting to " inches"
+  s.html.text <- gsub('"', ' inches', s.html.text)
   # done
   return(s.html.text)
 }
@@ -204,6 +204,7 @@ extractHzData <- function(s.lines) {
   hz.data <- list()
   dry.colors <- list()
   moist.colors <- list()
+  narrative.data <- list()
   
   # iterate over identified horizons, extracting hz parts
   for(i in seq_along(hz.idx)) {
@@ -224,14 +225,8 @@ extractHzData <- function(s.lines) {
     # save hz data to list
     hz.data[[i]] <- h
     
-#     ########### this works, but not when moisture state logic is reversed
-#     # parse FIRST dry color, result is a 1-row matrix
-#     dry.colors[[i]] <- stri_match(this.chunk, regex=dry.color.rule)
-#     
-#     # parse FIRST moist color, result is a 1-row matrix
-#     moist.colors[[i]] <- stri_match(this.chunk, regex=moist.color.rule)
-#     ###########
-    
+    # save narrative to list
+    narrative.data[[i]] <- this.chunk
     
     ## TODO: test this!
     # parse ALL colors, result is a multi-row matrix, 5th column is moisture state
@@ -263,10 +258,12 @@ extractHzData <- function(s.lines) {
   hz.data <- ldply(hz.data)[2:5]
   dry.colors <- ldply(dry.colors)[2:4]
   moist.colors <- ldply(moist.colors)[2:4]
+  narrative.data <- ldply(narrative.data)
   
   names(hz.data) <- c('name', 'top', 'bottom', 'units')
   names(dry.colors) <- c('dry_hue', 'dry_value', 'dry_chroma')
   names(moist.colors) <- c('moist_hue', 'moist_value', 'moist_chroma')
+  names(narrative.data) <- c('narrative')
   
   # cast to proper data types
   hz.data$top <- as.numeric(hz.data$top)
@@ -288,7 +285,7 @@ extractHzData <- function(s.lines) {
   # remove units column
   hz.data$units <- NULL
   
-  return(cbind(hz.data, dry.colors, moist.colors))
+  return(cbind(hz.data, dry.colors, moist.colors, narrative.data))
 }
 
 

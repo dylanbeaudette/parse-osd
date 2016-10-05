@@ -7,6 +7,8 @@
 --
 -- 2016-10-03: no longer using manual fixes from Skye, removed most manual fixes from bottom of this script
 --
+-- 2016-10-04: added horizon narrative column
+--
 
 
 SET search_path TO osd, public;
@@ -27,6 +29,7 @@ matrix_dry_color_chroma int,
 matrix_wet_color_hue varchar(10),
 matrix_wet_color_value int,
 matrix_wet_color_chroma int,
+narrative text,
 series citext
 );
 
