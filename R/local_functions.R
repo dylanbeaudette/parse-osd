@@ -1,4 +1,81 @@
 
+### TODO: test / move into aqp ###
+
+# vectorized parsing of texture class from OSD
+parse_texture <- function(text) {
+  # mineral texture classes
+  textures <- c('coarse sand', 'sand', 'fine sand', 'very fine sand', 'loamy coarse sand', 'loamy sand', 'loamy fine sandy', 'loamy very fine sand', 'coarse sandy loam', 'sandy loam', 'fine sandy loam', 'very fine sandy loam', 'loam', 'silt loam', 'silt', 'sand clay loam', 'clay loam', 'silty clay loam', 'sandy clay', 'silty clay', 'clay')
+  
+  # combine into capturing REGEX
+  texture.regex <- paste0('(', paste(textures, collapse='|'), ')')
+  
+  # get matches
+  m <- stri_match(text, regex = texture.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  # keep only matches
+  m <- m[, 2]
+  
+  # convert to ordered factor
+  m <- factor(m, levels=textures, ordered = TRUE)
+  
+  return(m)
+}
+
+# vectorized parsing of coarse fraction qty+class from OSD
+parse_CF <- function(text) {
+  cf.type <- c('gravelly', 'cobbly', 'stony', 'bouldery', 'channery', 'flaggy')
+  cf.qty <- c('', 'very ', 'extremely ')
+  cf <- apply(expand.grid(cf.qty, cf.type), 1, paste, collapse='')
+  
+  # combine into capturing REGEX
+  cf.regex <- paste0('(', paste(cf, collapse='|'), ')')
+  
+  # get matches
+  m <- stri_match(text, regex = cf.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  # keep only matches
+  m <- m[, 2]
+  
+  return(m)
+}
+
+# vectorized parsing of pH
+parse_pH <- function(text) {
+  
+  # combine into capturing REGEX
+  ph.regex <- '\\(ph\\s?([0-9]\\.[0-9])\\)'
+  
+  # get matches
+  m <- stri_match(text, regex = ph.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  # keep only matches
+  m <- as.numeric(m[, 2])
+  
+  return(m)
+}
+
+
+# vectorized parsing of pH class
+parse_pH_class <- function(text) {
+  
+  # mineral texture classes
+  pH_classes <- c('ultra acid', 'extremely acid', 'vert strongly acid', 'strongly acid', 'moderately acid', 'slightly acid', 'neutral', 'slightly alkaline', 'mildly alkaline', 'moderately alkaline', 'strongly alkaline', 'very strongly alkaline')
+  
+  # combine into capturing REGEX
+  pH_classes.regex <- paste0('(', paste(pH_classes, collapse='|'), ')')
+  
+  # get matches
+  m <- stri_match(text, regex = pH_classes.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  # keep only matches
+  m <- m[, 2]
+  
+  # return as an ordered factor acidic -> basic
+  m <- factor(m, levels=pH_classes, ordered = TRUE)
+  
+  return(m)
+}
+
+### TODO: test / move into aqp ###
+
+
+
 ## temporary hack: storing as a global variable
 # values are REGEX that try to accomodate typos
 # names are the proper section names
@@ -132,15 +209,15 @@ getOSD <- function(s) {
 
 
 
-## TODO: this is wasteful as we don't need to parse the entire OSD, retain sections from previous operation
+# s.lines: result of getOSD()
 extractHzData <- function(s.lines) {
   options(stringsAsFactors=FALSE)
   
+  ## TODO: this is kind of wasteful
   # this will not work in the presence of typos
   # new code for splitting blocks by section, lines from each section are not joined
   sections <- extractSections(s.lines, collapseLines = FALSE)
   tp <- sections[['TYPICAL PEDON']] 
-  
   
   ## REGEX rules
   # http://regexr.com/
@@ -285,7 +362,19 @@ extractHzData <- function(s.lines) {
   # remove units column
   hz.data$units <- NULL
   
-  return(cbind(hz.data, dry.colors, moist.colors, narrative.data))
+  # combine into single DF
+  res <- cbind(hz.data, dry.colors, moist.colors)
+  
+  # parse out other elements from the narrative
+  res$texture_class <- parse_texture(narrative.data$narrative)
+  res$cf_class <- parse_CF(narrative.data$narrative)
+  res$pH <- parse_pH(narrative.data$narrative)
+  res$pH_class <- parse_pH_class(narrative.data$narrative)
+  
+  # add narrative
+  res <- cbind(res, narrative.data)
+  
+  return(res)
 }
 
 
