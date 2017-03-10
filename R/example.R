@@ -22,12 +22,14 @@ extractHzData(getOSD('pentz'))
 # can't parse (N 3/)
 testIt('demas')
 
+# horizons are multi-line records... REGEX can't parse
+testIt('HELMER')
+
 # fixed B and N hues
 testIt('SOUTHPOINT')
 
 # fixed: 5GY hues
 testIt('figgs')
-
 
 # fixed
 # multiple matches in type location

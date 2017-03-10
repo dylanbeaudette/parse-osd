@@ -1,7 +1,8 @@
 # parse-osd
-Code related to parsing of OSD text/HTML files.
+Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2017-03-10: fixes to color parsing REGEX, B,Y,N hues (mostly) parsed. still issues with "N 3/"
 * 2016-10-05: horizon narrative chunks are now saved and available via `soilDB::fetchOSD()`
 * 2016-10-04: more chunking, better REGEX, logging of missing (3% have 404 errors) vs. un-parsed OSDs (29 series)
 * 2016-02-10: HTML contents are converted to text and appended to a file for fulltext searching, works
@@ -9,11 +10,8 @@ Code related to parsing of OSD text/HTML files.
 * 2016-02-15: horizon parsing now uses chunked sections.. typos break things, e.g. ["TypicalPedon"](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
 * 2016-03-23: small adjustments to color parsing, should be a little more inclusive
 
-# python (no longer used)
-This is the current python implementation, not perfect, but gets 95% of the data I need. Currently relies on a directory of ALL OSD text files, the bash shell, and python. It is a huge pain in the neck to try and get the entire set of OSD text files.
-
-# R (active development)
-This is an R version of the python implementation, much simpler to debug and doesn't require a directory of OSD text files. It should be a simple task to iterate over a list of series names from the SC database, saving the results to an intermediate file or data structure. Failures have to be handled gracefully. Test REGEX rules here: http://regexr.com/
+# R
+This is the current implementation and always a work in progress. Test REGEX rules here: http://regexr.com/
 
 ## OSD Fulltext Searches
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
@@ -27,13 +25,12 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 details pending...
 
 ## TODO
-1. figure out how to deal with multiple colors
-2. combine top+bottom with top only rules, ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
-3. test new color-parsing code
-4. how can we match neutral colors: (N 2.5/)
-5. how can we extract mixed horizons?: '3E & Bt' ?
-6. typos are very hard to fix [Ackwater](http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER), [TUSKAHOMA](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
-7. typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
+  * figure out how to deal with multiple colors
+  * combine top+bottom with top only rules, ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
+  * how can we match neutral colors that are missing a chroma: (N 2.5/)
+  * how can we extract mixed horizons?: '3E & Bt' ?
+  * typos are very hard to fix [Ackwater](http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER), [TUSKAHOMA](https://soilseries.sc.egov.usda.gov/OSD_Docs/T/TUSKAHOMA.html)
+  * typos in Munsell hue may be possible to fix (http://casoilresource.lawr.ucdavis.edu/sde/?series=ACKWATER)
 
 ## Examples
 
@@ -83,3 +80,5 @@ $`DISTRIBUTION AND EXTENT`
 [1] " The Piedmont of Alabama, Georgia, North Carolina,South Carolina, and Virginia. The series is of large extent, with an area of more than 10 million acres.MLRA SOIL SURVEY REGIONAL OFFICE (MO) RESPONSIBLE: Raleigh, North CarolinaSERIES ESTABLISHED: Cecil County, Maryland; 1899."
 ```
 
+# python (no longer used)
+This is the old, python implementation. Relies on a directory of ALL OSD text files, the bash shell, and python. It is a huge pain in the neck to try and get the entire set of OSD text files.
