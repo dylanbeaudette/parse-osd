@@ -19,8 +19,15 @@ testIt <- function(x) {
 extractHzData(getOSD('amador'))
 extractHzData(getOSD('pentz'))
 
+# can't parse (N 3/)
+testIt('demas')
 
-testIt('ESTES')
+# fixed B and N hues
+testIt('SOUTHPOINT')
+
+# fixed: 5GY hues
+testIt('figgs')
+
 
 # fixed
 # multiple matches in type location
