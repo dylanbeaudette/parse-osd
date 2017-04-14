@@ -352,8 +352,8 @@ extractHzData <- function(s.lines) {
   moist.colors$moist_value <- as.numeric(moist.colors$moist_value)
   moist.colors$moist_chroma <- as.numeric(moist.colors$moist_chroma)
   
-  ## TODO sanity check / unit reporting 
-  # convert in -> cm
+  ## TODO sanity check / unit reporting: this will fail when formatting is inconsistent (PROPER series)
+  # convert in -> cm using the first horizon
   if(hz.data$units[1] %in% c('inches', 'in')) {
     hz.data$top <- round(hz.data$top * 2.54)
     hz.data$bottom <- round(hz.data$bottom * 2.54)

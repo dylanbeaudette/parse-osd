@@ -19,6 +19,10 @@ testIt <- function(x) {
 extractHzData(getOSD('amador'))
 extractHzData(getOSD('pentz'))
 
+
+# first horizon depths use inconsistent units specification: incorrect conversion applied
+extractHzData(getOSD('proper'))
+
 # can't parse (N 3/)
 testIt('demas')
 
