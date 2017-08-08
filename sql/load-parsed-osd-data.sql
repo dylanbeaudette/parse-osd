@@ -74,17 +74,6 @@ GRANT SELECT ON osd.osd_on_file TO soil;
 -- manual fixes
 --
 
--- rincon
-UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 1, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 1 WHERE series = 'RINCON' AND hzname = 'A12';
-UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 2, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 2 WHERE series = 'RINCON' AND hzname = 'B21t';
-UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 4, matrix_dry_color_chroma = 2, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 3, matrix_wet_color_chroma = 2 WHERE series = 'RINCON' AND hzname = 'B22t';
-UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'RINCON' AND hzname = 'B3tca';
-UPDATE osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 4, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 4 WHERE series = 'RINCON' AND hzname = 'Cca';
-
-
--- solano
-UPDATE osd.osd_colors SET matrix_dry_color_hue = '10YR', matrix_dry_color_value = 5, matrix_dry_color_chroma = 3, matrix_wet_color_hue = '10YR', matrix_wet_color_value = 4, matrix_wet_color_chroma = 3 WHERE series = 'SOLANO' AND hzname = 'Btn';
-
 
 -- update index
 VACUUM ANALYZE osd.osd_on_file;
