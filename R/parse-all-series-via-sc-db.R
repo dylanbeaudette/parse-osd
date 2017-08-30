@@ -57,7 +57,7 @@ additional_data text
 
 # cut down to a smaller number of series for testing
 if(testingMode)
-  x <- x[sample(1:length(x), size = 500)]
+  x <- x[sample(1:length(x), size = 500), ]
 
 for(i in x) {
   print(i)

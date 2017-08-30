@@ -21,7 +21,7 @@
   
  -- expression index
  CREATE INDEX osd_fulltext_idx ON osd.osd_fulltext USING gin(to_tsvector('english', fulltext));
- vacuum ANALYZE osd_fulltext ;
+ vacuum ANALYZE osd.osd_fulltext ;
  -- permissions
  grant SELECT ON osd.osd_fulltext to soil;
  
@@ -40,7 +40,7 @@
  CREATE INDEX osd_established_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', established));
  CREATE INDEX osd_additional_data_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', additional_data));
  
- VACUUM ANALYZE osd_fulltext2 ;
+ VACUUM ANALYZE osd.osd_fulltext2 ;
  -- permissions
  grant SELECT ON osd.osd_fulltext2 to soil;
  
