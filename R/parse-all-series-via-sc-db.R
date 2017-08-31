@@ -112,7 +112,7 @@ for(i in x) {
 # convert log to DF
 logdata <- ldply(parseLog)
 
-# 98% sections parsed
+# 97% sections parsed
 # prop.table(table(sapply(parseLog, function(i) i[['sections']])))
 # prop.table(table(sapply(parseLog, function(i) i[['hz-data']])))
 
