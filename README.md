@@ -2,6 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2017-08-31: better parsing / searching section data
 * 2017-03-10: fixes to color parsing REGEX, B,Y,N hues (mostly) parsed. still issues with "N 3/"
 * 2016-10-05: horizon narrative chunks are now saved and available via `soilDB::fetchOSD()`
 * 2016-10-04: more chunking, better REGEX, logging of missing (3% have 404 errors) vs. un-parsed OSDs (29 series)
@@ -13,13 +14,19 @@ Code related to parsing of the OSD HTML files.
 # R
 This is the current implementation and always a work in progress. Test REGEX rules here: http://regexr.com/
 
+
+
 ## OSD Fulltext Searches
 Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
 Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/sections.php).
 
-### TODO
-1. some of the section chunks have SQL syntax errors, ~ 5-10 records
-2. there are some non-ASCII characters present
+
+### Issues
+ 
+#### Stemming / Dictionary Selection
+ * "simple" vs "english" dictionary: stemming of words is only useful sometime
+ * stemming is counter productive when dealing with soil series names
+
 
 ## Estimation of Missing Dry / Moist Colors
 details pending...
