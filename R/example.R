@@ -6,7 +6,12 @@ library(plyr)
 source('local_functions.R')
 
 testIt <- function(x) {
+  # get data
   res <- getOSD(x)
+  
+  # init section REGEX: critical for locating brief narrative
+  setSectionREGEX(x)
+  
   l <- list()
   l[['sections']] <- extractSections(res)
   l[['section-indices']] <- findSectionIndices(res)
@@ -15,20 +20,15 @@ testIt <- function(x) {
 }
 
 
-## known working
-extractHzData(getOSD('amador'))
-extractHzData(getOSD('pentz'))
-
 
 # typos related to OCR: fixed 2017-08-08
-extractHzData(getOSD('rincon'))
 testIt('rincon')
 
 # typos related to OCR: fixed 2017-08-08
-extractHzData(getOSD('solano'))
+testIt('solano')
 
 # first horizon depths use inconsistent units specification: incorrect conversion applied
-extractHzData(getOSD('proper'))
+testIt('proper')
 
 # can't parse (N 3/)
 testIt('demas')

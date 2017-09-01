@@ -44,6 +44,9 @@ details pending...
 ### Parsed horizons
 ```
 x <- getOSD('cecil')
+# init section REGEX rules
+setSectionREGEX('cecil')
+# this requires section-splitting
 extractHzData(x)
 
   name top bottom dry_hue dry_value dry_chroma moist_hue moist_value moist_chroma
@@ -57,6 +60,9 @@ extractHzData(x)
 ### Parsed Sections
 ```
 x <- getOSD('cecil')
+# init section REGEX rules
+setSectionREGEX('cecil')
+# extract sections
 extractSections(x)
 
 $`TYPICAL PEDON`

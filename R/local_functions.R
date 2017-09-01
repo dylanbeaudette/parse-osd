@@ -76,26 +76,34 @@ parse_pH_class <- function(text) {
 
 
 
-## temporary hack: storing as a global variable
-# values are REGEX that try to accomodate typos
-# names are the proper section names
+# init the section names and REGEX search paterns
+# the current series name is required for the top-most section
+setSectionREGEX <- function(s) {
+  ## temporary hack: storing as a global variable
+  # values are REGEX that try to accomodate typos
+  # names are the proper section names
+  
+  ## TODO: 
+  # consider anchoring all to left-side + optional white-space
+  # "TYPICAL PEDON" REGEX is too greedy
+  # "BRIEF DESCRIPTION" has date in front of "XXX SERIES" due to HTML formatting
+  .sectionData <<- c('BRIEF DESCRIPTION' = paste0('^[0-9/]+', toupper(s), ' SERIES$'),
+                     'TAXONOMIC CLASS' = '^\\s*TAXONOMIC CLASS[:]? ',
+                     'TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]?\\s?', 
+                     'TYPE LOCATION'='^\\s*TYPE\\sLOCATION[:]?\\s?', 
+                     'RANGE IN CHARACTERISTICS'='^\\s*RANGE IN CHARACTERISTICS[:]? ', 
+                     'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
+                     'GEOGRAPHIC SETTING'='^\\s*GEOGRAPHIC SETTING[:]? ',
+                     'GEOGRAPHICALLY ASSOCIATED SOILS'='^\\s*GEOGRAPHICALLY ASSOCIATED SOILS[:]? ',
+                     'DRAINAGE AND PERMEABILITY'='^\\s*DRAINAGE AND PERMEABILITY[:]? ',
+                     'USE AND VEGETATION'='^\\s*USE AND VEGETATION[:]? ',
+                     'DISTRIBUTION AND EXTENT'='^\\s*DISTRIBUTION AND EXTENT[:]? ',
+                     'REMARKS'='^\\s?REMARKS[:]? ',
+                     'SERIES ESTABLISHED'='^\\s*SERIES ESTABLISHED[:]? ',
+                     'ADDITIONAL DATA'='^\\s*ADDITIONAL DATA[:]? '
+  )
+}
 
-## TODO: 
-# consider anchoring all to left-side + optional white-space
-# "TYPICAL PEDON" REGEX is too greedy
-.sectionData <<- c('TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]?\\s?', 
-                 'TYPE LOCATION'='^\\s*TYPE\\sLOCATION[:]?\\s?', 
-                 'RANGE IN CHARACTERISTICS'='^\\s*RANGE IN CHARACTERISTICS[:]? ', 
-                 'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
-                 'GEOGRAPHIC SETTING'='^\\s*GEOGRAPHIC SETTING[:]? ',
-                 'GEOGRAPHICALLY ASSOCIATED SOILS'='^\\s*GEOGRAPHICALLY ASSOCIATED SOILS[:]? ',
-                 'DRAINAGE AND PERMEABILITY'='^\\s*DRAINAGE AND PERMEABILITY[:]? ',
-                 'USE AND VEGETATION'='^\\s*USE AND VEGETATION[:]? ',
-                 'DISTRIBUTION AND EXTENT'='^\\s*DISTRIBUTION AND EXTENT[:]? ',
-                 'REMARKS'='^\\s?REMARKS[:]? ',
-                 'SERIES ESTABLISHED'='^\\s*SERIES ESTABLISHED[:]? ',
-                 'ADDITIONAL DATA'='^\\s*ADDITIONAL DATA[:]? '
-                 )
 
 # remove blank lines from HTML text
 removeBlankLines <- function(chunk) {
@@ -137,17 +145,30 @@ extractSections <- function(chunk.lines, collapseLines=TRUE) {
     
   # combine chunks into a list
   for(i in 1:(length(section.locations) - 1)) {
+    
+    # current name and landmarks
     this.name <- section.names[i]
     start.line <- section.locations[i]
+    
     # this stop line overlaps with the start of the next, decrease index by 1
     stop.line <- section.locations[i+1] - 1
+    
     # extract current chunk
     chunk <- chunk.lines[start.line : stop.line]
+    
+    # special case #1: the brief narrative is split over two lines; first line is junk
+    if(this.name == 'BRIEF DESCRIPTION' & length(chunk) > 1) {
+      # attemp to remove when possible
+      chunk <- chunk[-1]
+    }
+    
     # optionally combine lines
     if(collapseLines)
       chunk <- paste(chunk, collapse='')
-    # remove section name
+    
+    # attempt to remove section name
     chunk <- gsub(this.name, '', chunk)
+    
     # store
     l[[this.name]] <- chunk
   }

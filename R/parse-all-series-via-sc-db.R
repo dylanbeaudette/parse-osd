@@ -8,7 +8,7 @@ source('local_functions.R')
 
 # toggles
 remakeTables <- TRUE
-testingMode <- FALSE
+testingMode <- TRUE
 
 # all series from SC database
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
@@ -36,7 +36,9 @@ if(remakeTables) {
   ## need to adjust fields manually as we edit
   cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
   cat('CREATE TABLE osd.osd_fulltext2 (
-series citext, 
+series citext,
+brief_narrative text,
+taxonomic_class text,
 typical_pedon text,
 type_location text,
 ric text,
@@ -57,21 +59,24 @@ additional_data text
 
 # cut down to a smaller number of series for testing
 if(testingMode)
-  x <- x[sample(1:length(x), size = 500), ]
+  x <- x[sample(1:length(x), size = 500)]
 
 for(i in x) {
   print(i)
+  
   # result is a list
   i.lines <- try(getOSD(i), silent = TRUE)
+  
   # there are some OSDs that may not exist
   if(class(i.lines) == 'try-error') {
     l[[i]] <- NULL
     parseLog[[i]][['sections']] <- FALSE
     parseLog[[i]][['hz-data']] <- FALSE
-  }
+  } else {
     
-  
-  else {
+    # register section REGEX
+    # this sets / updates a global variable
+    setSectionREGEX(i)
     
     ## no logging, this usually works fine
     # get rendered HTML->text and save to file 
