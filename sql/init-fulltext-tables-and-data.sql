@@ -35,6 +35,7 @@
  -- solution: different types of indexing
  -- "english" index for most fields
  CREATE INDEX osd_typical_pedon_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', typical_pedon));
+  CREATE INDEX osd_brief_narrative_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', brief_narrative));
  CREATE INDEX osd_type_location_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', type_location));
  CREATE INDEX osd_ric_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', ric));
  CREATE INDEX osd_geog_location_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', geog_location));
