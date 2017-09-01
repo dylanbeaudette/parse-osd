@@ -75,7 +75,7 @@ parse_pH_class <- function(text) {
 ### TODO: test / move into aqp ###
 
 
-
+## this has to be done before any extraction is possible
 # init the section names and REGEX search paterns
 # the current series name is required for the top-most section
 setSectionREGEX <- function(s) {
@@ -399,78 +399,3 @@ extractHzData <- function(s.lines) {
 }
 
 
-
-## DEPRECIATED
-# # remove URLS from parsed chunk
-# stripURLs <- function(chunk.list) {
-#   
-#   # get chunk names
-#   cn <- names(chunk.list)
-#   
-#   # remove link targets
-#   for(i in seq_along(chunk.list)) {
-#     # get current name
-#     i.name <- cn[i]
-#     # how many sub-elements
-#     n <- length(chunk.list[[i]])
-#     
-#     # if there are more than 1 sub-elements apply recursively
-#     if(n > 1)
-#       chunk.list[[i]] <- stripURLs(chunk.list[[i]])
-#     
-#     # if there is a name
-#     if(!is.null(i.name)) {
-#       # check for link and remove it
-#       if(i.name == 'a')
-#         chunk.list[[i]][['.attrs']] <- NULL
-#     }
-#   } 
-#   
-#   return(chunk.list)
-# }
-
-## DEPRECIATED
-# # extract blocks defined by <p></p>
-# # works: amador, auburn, cecil
-# # doesn't work: drummer
-# extractParaBlock <- function(x.parsed, block) {
-#   idx <- which(sapply(x.parsed, function(i) length(grep(block, i, ignore.case = TRUE)) > 0))[1]
-#   chunk.list <- x.parsed[[idx]]
-#   chunk.list <- stripURLs(chunk.list)
-#   # convert to lines and remove blank or NA lines
-#   chunk.lines <- removeBlankLines(chunk.list)
-#   # convert back to single chunk of text
-#   chunk.text <- paste(chunk.lines, collapse = '')
-#   return(chunk.text)
-# }
-
-## DEPRECIATED 
-# ## A helper function that tests whether an object is either NULL _or_ 
-# ## a list of NULLs
-# is.NullOb <- function(x) is.null(x) | all(sapply(x, is.null))
-# 
-# ## Recursively step down into list, removing all such objects 
-# rmNullObs <- function(x) {
-#   x <- Filter(Negate(is.NullOb), x)
-#   lapply(x, function(x) if (is.list(x)) rmNullObs(x) else x)
-# }
-
-## 2016-02-14: DEPRECIATED
-# getAndParseOSD <- function(s) {
-#   # make URL
-#   u <- seriesNameToURL(s)
-#   
-#   # get HTML content
-#   g <- GET(u)
-#   
-#   # convert to list
-#   ## 2016-02-13: this isn't working...
-#   x.parsed <- xmlToList(content(g, 'parsed'))
-#   ## does this result in the same data?  NO
-#   # x.parsed <- xmlToList(htmlTreeParse(content(g, 'parsed')))
-#   
-#   # remove NULL elements
-#   x.parsed <- rmNullObs(x.parsed$body)
-#   
-#   return(x.parsed)
-# }
