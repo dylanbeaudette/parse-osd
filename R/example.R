@@ -19,7 +19,8 @@ testIt <- function(x) {
   return(l)
 }
 
-
+# brief narrative not parsed, fixed 2017-09-02
+testIt('amador')
 
 # typos related to OCR: fixed 2017-08-08
 testIt('rincon')

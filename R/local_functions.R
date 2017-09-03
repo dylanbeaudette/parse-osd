@@ -87,7 +87,7 @@ setSectionREGEX <- function(s) {
   # consider anchoring all to left-side + optional white-space
   # "TYPICAL PEDON" REGEX is too greedy
   # "BRIEF DESCRIPTION" has date in front of "XXX SERIES" due to HTML formatting
-  .sectionData <<- c('BRIEF DESCRIPTION' = paste0('^[0-9/]+', toupper(s), ' SERIES$'),
+  .sectionData <<- c('BRIEF DESCRIPTION' = paste0('^[0-9/]+', toupper(s), ' SERIES\\s?$'),
                      'TAXONOMIC CLASS' = '^\\s*TAXONOMIC CLASS[:]? ',
                      'TYPICAL PEDON'='^\\s*TYP.*\\sPEDON[:|-|;]?\\s?', 
                      'TYPE LOCATION'='^\\s*TYPE\\sLOCATION[:]?\\s?', 
