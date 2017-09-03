@@ -19,7 +19,11 @@ testIt <- function(x) {
   return(l)
 }
 
-# brief narrative not parsed, fixed 2017-09-02
+
+# brief narrative not parsed, extra whitespace after SERIES
+testIt('ATOMIC')
+
+# brief narrative not parsed: fixed 2017-09-02
 testIt('amador')
 
 # typos related to OCR: fixed 2017-08-08
