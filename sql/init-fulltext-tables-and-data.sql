@@ -56,4 +56,23 @@
  grant SELECT ON osd.osd_fulltext2 to soil;
  
  
+ -- quick check for OSDs missing key fulltext sections
+CREATE TEMP TABLE missing_sections AS
+ SELECT series, 
+ CASE WHEN  typical_pedon = '' THEN 1 ELSE 0 END as tp,
+ CASE WHEN  brief_narrative = '' THEN 1 ELSE 0 END as bn,
+ CASE WHEN  competing_series = '' THEN 1 ELSE 0 END as cs,
+ CASE WHEN  geog_assoc_soils = '' THEN 1 ELSE 0 END as gs
+ from osd.osd_fulltext2
+ WHERE typical_pedon  = '' 
+ OR brief_narrative  = '' 
+ OR competing_series  = '' 
+ OR geog_assoc_soils  = '' ;
+ 
+\copy missing_sections to 'missing-section-data.csv' CSV HEADER
+ 
+ 
+ 
+ 
+ 
  
