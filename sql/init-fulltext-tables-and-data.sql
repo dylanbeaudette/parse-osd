@@ -47,13 +47,13 @@ CREATE INDEX osd_type_location_idx ON osd.osd_fulltext2 USING gin(to_tsvector('e
 CREATE INDEX osd_ric_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', ric));
 CREATE INDEX osd_geog_location_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', geog_location));
 CREATE INDEX osd_drainage_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', drainage));
-CREATE INDEX osd_use_and_veg_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', use_and_veg));
 CREATE INDEX osd_distribution_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', distribution));
 CREATE INDEX osd_remarks_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', remarks));
 CREATE INDEX osd_established_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', established));
 CREATE INDEX osd_additional_data_idx ON osd.osd_fulltext2 USING gin(to_tsvector('english', additional_data));
 
 -- "simple" index for fields where we expect series names
+CREATE INDEX osd_use_and_veg_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', use_and_veg));
 CREATE INDEX osd_competing_series_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', competing_series));
 CREATE INDEX osd_geog_assoc_soils_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', geog_assoc_soils));
 CREATE INDEX osd_taxonomic_class_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', taxonomic_class));
