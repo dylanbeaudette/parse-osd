@@ -2,6 +2,7 @@ library(stringi)
 library(httr)
 library(rvest)
 library(plyr)
+library(aqp)
 
 source('local_functions.R')
 
