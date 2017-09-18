@@ -6,15 +6,28 @@ library(rvest)
 
 source('local_functions.R')
 
-# toggles
-remakeTables <- TRUE
+## toggles
+
+# use a small, random sample for testing
 testingMode <- FALSE
 
-# all series from SC database
+# re-make tables? used when parsing the entire collection
+remakeTables <- FALSE
+
+# emit a DELETE FROM ... to an update.sql file, remove those series which will be updated
+updateMode <- TRUE
+
+
+
+# load latest SC-database
+# source('dump-SC-database.R')
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
 
 # keep only those records that are established or tentative
 x <- subset(x, subset= series_status != 'inactive')
+
+# optionally  keep only those series updated within last x months
+x <- x[which(x$objwlupdated > as.POSIXct('2017-06-01 00:00:00')), ]
 
 # keep just the series names 
 x <- x$soilseriesname
@@ -55,7 +68,12 @@ additional_data text
   cat("set client_encoding to 'latin1 ;\n", file='fulltext-section-data.sql', append = TRUE)
 }
 
-
+# generate some extra SQL that will delete those series being updated
+if(updateMode) {
+  sql <- "DELETE FROM osd.osd_colors WHERE series IN "
+  sql <- paste0(sql, soilDB::format_SQL_in_statement(x), ' ;')
+  cat(sql, file='delete-for-update.sql')
+}
 
 # cut down to a smaller number of series for testing
 if(testingMode)

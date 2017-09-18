@@ -3,7 +3,7 @@
 ## fill-in missing / incorrectly parsed OSD colors using brute-force supervised classification
 ##
 
-
+## TODO: save model object for times when an update would suffice and we don't have all of the samples
 
 library(randomForest)
 
