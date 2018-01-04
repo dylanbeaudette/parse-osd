@@ -12,10 +12,11 @@ source('local_functions.R')
 testingMode <- FALSE
 
 # re-make tables? used when parsing the entire collection
-remakeTables <- FALSE
+remakeTables <- TRUE
 
+## TODO: this isn't ready, as we don't have the full dataset for filling of missing colors
 # emit a DELETE FROM ... to an update.sql file, remove those series which will be updated
-updateMode <- TRUE
+updateMode <- FALSE
 
 
 
@@ -27,7 +28,10 @@ x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
 x <- subset(x, subset= series_status != 'inactive')
 
 # optionally  keep only those series updated within last x months
-x <- x[which(x$objwlupdated > as.POSIXct('2017-06-01 00:00:00')), ]
+if(updateMode) {
+  remakeTables <- FALSE
+  x <- x[which(x$objwlupdated > as.POSIXct('2017-06-01 00:00:00')), ]
+}
 
 # keep just the series names 
 x <- x$soilseriesname
