@@ -20,5 +20,5 @@ source('predict-missing-colors.R')
 
 
 # stats
-x <- read.csv('logfile-2017-03-10.csv', stringsAsFactors = FALSE)
+x <- read.csv('logfile-2018-01-05.csv', stringsAsFactors = FALSE)
 table(x$sections)
