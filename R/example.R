@@ -16,9 +16,13 @@ testIt <- function(x) {
   l <- list()
   l[['sections']] <- extractSections(res)
   l[['section-indices']] <- findSectionIndices(res)
+  l[['site-data']] <- extractSiteData(l[['sections']])
   l[['hz-data']] <- extractHzData(res)
   return(l)
 }
+
+# 
+testIt('drummer')
 
 
 # brief narrative not parsed, extra whitespace after SERIES

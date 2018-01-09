@@ -1,6 +1,8 @@
 
 ### TODO: test / move into aqp ###
 
+## TODO: the parsing functions can be generalized into wrapper and single function that accepts text + classes
+
 # vectorized parsing of texture class from OSD
 parse_texture <- function(text) {
   # mineral texture classes
@@ -11,8 +13,13 @@ parse_texture <- function(text) {
   
   # get matches
   m <- stri_match(text, regex = texture.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
-  # keep only matches
-  m <- m[, 2]
+  
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
+  # keep only matches and convert to lower case
+  m <- tolower(m[, 2])
   
   # convert to ordered factor
   m <- factor(m, levels=textures, ordered = TRUE)
@@ -31,8 +38,13 @@ parse_CF <- function(text) {
   
   # get matches
   m <- stri_match(text, regex = cf.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
-  # keep only matches
-  m <- m[, 2]
+  
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
+  # keep only matches and convert to lower case
+  m <- tolower(m[, 2])
   
   return(m)
 }
@@ -45,6 +57,11 @@ parse_pH <- function(text) {
   
   # get matches
   m <- stri_match(text, regex = ph.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
   # keep only matches
   m <- as.numeric(m[, 2])
   
@@ -63,14 +80,48 @@ parse_pH_class <- function(text) {
   
   # get matches
   m <- stri_match(text, regex = pH_classes.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
-  # keep only matches
-  m <- m[, 2]
+ 
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
+  # keep only matches and convert to lower case
+  m <- tolower(m[, 2])
   
   # return as an ordered factor acidic -> basic
   m <- factor(m, levels=pH_classes, ordered = TRUE)
   
   return(m)
 }
+
+
+# vectorized parsing of drainage class
+parse_drainage_class <- function(text) {
+  
+  # drainage classes, in order, lower case
+  classes <- c("excessively", "somewhat excessively", "well", "moderately well", 
+                        "somewhat poorly", "poorly", "very poorly", "subaqueous")
+  
+  # combine into capturing REGEX
+  classes.regex <- paste0('(', paste(classes, collapse='|'), ')')
+  
+  # get matches
+  m <- stri_match(text, regex = classes.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
+  # keep only matches and convert to lower case
+  m <- tolower(m[, 2])
+  
+  # return as an ordered factor acidic -> basic
+  m <- factor(m, levels=classes, ordered = TRUE)
+  
+  return(m)
+}
+
+
 
 ### TODO: test / move into aqp ###
 
@@ -95,7 +146,7 @@ setSectionREGEX <- function(s) {
                      'COMPETING SERIES'='^\\s*COMPETING SERIES[:]? ', 
                      'GEOGRAPHIC SETTING'='^\\s*GEOGRAPHIC SETTING[:]? ',
                      'GEOGRAPHICALLY ASSOCIATED SOILS'='^\\s*GEOGRAPHICALLY ASSOCIATED SOILS[:]? ',
-                     'DRAINAGE AND PERMEABILITY'='^\\s*DRAINAGE AND PERMEABILITY[:]? ',
+                     'DRAINAGE AND PERMEABILITY'='^\\s*DRAINAGE AND (PERMEABILITY)|(HYDRAULIC CONDUCTIVITY)[:]? ',
                      'USE AND VEGETATION'='^\\s*USE AND VEGETATION[:]? ',
                      'DISTRIBUTION AND EXTENT'='^\\s*DISTRIBUTION AND EXTENT[:]? ',
                      'REMARKS'='^\\s?REMARKS[:]? ',
@@ -228,6 +279,22 @@ getOSD <- function(s) {
   return(s.html.text)
 }
 
+
+
+# parse important pieces from sections
+# x: list of section chunks
+extractSiteData <- function(x) {
+  
+  # drainage class
+  drainage.class <- parse_drainage_class(x[['DRAINAGE AND PERMEABILITY']])
+  
+  # other things?
+  
+  
+  # composite into a list for later
+  r <- list(drainage=drainage.class)
+  return(r)
+}
 
 
 # s.lines: result of getOSD()
