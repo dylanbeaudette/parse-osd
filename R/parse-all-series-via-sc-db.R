@@ -9,7 +9,7 @@ source('local_functions.R')
 ## toggles
 
 # use a small, random sample for testing
-testingMode <- FALSE
+testingMode <- TRUE
 
 # re-make tables? used when parsing the entire collection
 remakeTables <- TRUE
@@ -38,6 +38,9 @@ x <- x$soilseriesname
 
 # init list to store results
 l <- list()
+
+# list for site-level data
+sl <- list()
 
 # init list to store log
 parseLog <- list()
@@ -81,7 +84,7 @@ if(updateMode) {
 
 # cut down to a smaller number of series for testing
 if(testingMode)
-  x <- x[sample(1:length(x), size = 500)]
+  x <- x[sample(1:length(x), size = 50)]
 
 for(i in x) {
   print(i)
@@ -116,8 +119,12 @@ for(i in x) {
     }
       
     
-    # append extracted data to our list, catch errors related to parsing sections
-    hz.data <- try(extractHzData(i.lines))
+    # append hz data to our list, catch errors related to parsing sections
+    hz.data <- try(extractHzData(i.lines), silent = TRUE)
+    
+    # append site data to our list, catch errors related to parsing sections
+    section.data <- try(extractSections(i.lines), silent = TRUE)
+    site.data <- try(extractSiteData(section.data), silent = TRUE)
     
     ## TODO: this isn't likely correct
     # NULL results means that there was a parse error
@@ -126,6 +133,11 @@ for(i in x) {
     # try-error means no OSD
     if(class(hz.data) != 'try-error') {
       l[[i]] <- hz.data
+    }
+    
+    # try-error means sections / site data not parsed
+    if(class(site.data) != 'try-error') {
+      sl[[i]] <- site.data
     }
     
   }
@@ -149,16 +161,24 @@ prop.table(table(logdata$`hz-data`))
 # save dated log file
 write.csv(logdata, file=paste0('logfile-', Sys.Date(), '.csv'), row.names=FALSE)
 
+# ID those series that were not parsed
+parse.errors <- logdata$.id[which(! logdata$`hz-data` & logdata$sections)]
+cat(parse.errors, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
+
+
 # convert parsed horizon data to DF and save
 d <- ldply(l)
 d$seriesname <- d$.id
 d$.id <- NULL
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
-# ID those series that were not parsed
-parse.errors <- logdata$.id[which(! logdata$`hz-data` & logdata$sections)]
+# convert parsed site data to DF and save
+d <- ldply(sl)
+d$seriesname <- d$.id
+d$.id <- NULL
+write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
 
-cat(parse.errors, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
+
 
 
 

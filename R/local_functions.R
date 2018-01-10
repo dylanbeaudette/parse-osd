@@ -292,7 +292,7 @@ extractSiteData <- function(x) {
   
   
   # composite into a list for later
-  r <- list(drainage=drainage.class)
+  r <- data.frame(drainage=drainage.class)
   return(r)
 }
 
