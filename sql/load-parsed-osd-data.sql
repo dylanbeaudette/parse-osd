@@ -16,6 +16,10 @@ SET search_path TO osd, public;
 -- wrap in a transaction
 BEGIN;
 
+-- create new table for OSD site data
+
+
+
 -- create new table that contains colors
 -- load our parsed OSD data into this table
 DROP TABLE osd.osd_colors;

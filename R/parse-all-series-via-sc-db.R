@@ -9,7 +9,7 @@ source('local_functions.R')
 ## toggles
 
 # use a small, random sample for testing
-testingMode <- TRUE
+testingMode <- FALSE
 
 # re-make tables? used when parsing the entire collection
 remakeTables <- TRUE
