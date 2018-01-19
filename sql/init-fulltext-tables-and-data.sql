@@ -58,6 +58,9 @@ CREATE INDEX osd_competing_series_idx ON osd.osd_fulltext2 USING gin(to_tsvector
 CREATE INDEX osd_geog_assoc_soils_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', geog_assoc_soils));
 CREATE INDEX osd_taxonomic_class_idx ON osd.osd_fulltext2 USING gin(to_tsvector('simple', taxonomic_class));
 
+-- TODO: add plain indices for LIKE style searching
+
+
 VACUUM ANALYZE osd.osd_fulltext2 ;
 
 -- permissions
