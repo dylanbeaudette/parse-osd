@@ -21,6 +21,13 @@ testIt <- function(x) {
   return(l)
 }
 
+
+# works
+testIt('downer')
+
+# missing "cm" 
+testIt('hammonton')
+
 # 
 testIt('drummer')
 

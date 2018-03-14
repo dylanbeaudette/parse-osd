@@ -31,6 +31,31 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 ## Estimation of Missing Dry / Moist Colors
 details pending...
 
+## Representative O Horizon Colors
+Most O horizons in the OSD soil color DB are missing colors. What are some of the most frequently used dry/moist colors for O horizons?
+
+
+### Dry Colors
+![](O-hz-colors-dry.png)
+
+|genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
+|:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
+|Oi       |10YR        |             4|              2|     0.0196145|#776351 | 0.46853| 0.38782| 0.31591| 46|
+|Oe       |7.5YR       |             4|              2|     0.0137197|#736252 | 0.45164| 0.38277| 0.32188| 57|
+|Oa       |7.5YR       |             4|              2|     0.0254501|#6B5D51 | 0.42105| 0.36571| 0.31879| 54|
+|not-used |7.5YR       |             4|              2|     0.0302996|#756658 | 0.45837| 0.40185| 0.34542| 16|
+
+### Moist Colors
+![](O-hz-colors-moist.png)
+
+
+|genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
+|:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
+|Oi       |7.5YR       |             2|              2|     0.0349270|#49392C | 0.28582| 0.22352| 0.17364| 50|
+|Oe       |7.5YR       |             2|              2|     0.0287997|#44372C | 0.26711| 0.21434| 0.17254| 48|
+|Oa       |10YR        |             2|              1|     0.0143189|#3D322B | 0.23837| 0.19787| 0.16990| 45|
+|not-used |10YR        |             2|              2|     0.0401323|#453A30 | 0.27235| 0.22716| 0.18697| 18|
+
 ## TODO
   * figure out how to deal with multiple colors
   * combine top+bottom with top only rules, ideas: http://stackoverflow.com/questions/15474741/python-regex-optional-capture-group
