@@ -2,6 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2018-03-14: evaluation of missing color and O horizon color gap-filling
 * 2017-08-31: better parsing / searching section data
 * 2017-03-10: fixes to color parsing REGEX, B,Y,N hues (mostly) parsed. still issues with "N 3/"
 * 2016-10-05: horizon narrative chunks are now saved and available via `soilDB::fetchOSD()`
@@ -17,8 +18,7 @@ This is the current implementation and always a work in progress. Test REGEX rul
 
 
 ## OSD Fulltext Searches
-Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/index.php).
-Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/sections.php).
+Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd-fulltext/).
 
 
 ### Issues
@@ -31,12 +31,15 @@ Experimental, sectioned version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/
 ## Estimation of Missing Dry / Moist Colors
 details pending...
 
+![](R/dry-original-vs-filled-example.png)
+
+
 ## Representative O Horizon Colors
 Most O horizons in the OSD soil color DB are missing colors. What are some of the most frequently used dry/moist colors for O horizons?
 
 
 ### Dry Colors
-![](O-hz-colors-dry.png)
+![](R/O-hz-colors-dry.png)
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
 |:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
@@ -46,7 +49,7 @@ Most O horizons in the OSD soil color DB are missing colors. What are some of th
 |not-used |7.5YR       |             4|              2|     0.0302996|#756658 | 0.45837| 0.40185| 0.34542| 16|
 
 ### Moist Colors
-![](O-hz-colors-moist.png)
+![](R/O-hz-colors-moist.png)
 
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|

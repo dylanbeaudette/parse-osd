@@ -90,7 +90,13 @@ g <- rbind(x.original, x)
 
 ## graphical comparison... still needs some work
 
-groupedProfilePlot(g, groups='group', color='dry_soil_color') ; title('Dry Colors')
+png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='cairo', antialias = 'subpixel')
+
+par(mar=c(1,1,3,1))
+groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
+
+dev.off()
+
 groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist Colors')
 
 
