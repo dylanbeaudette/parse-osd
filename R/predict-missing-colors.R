@@ -6,6 +6,10 @@
 ## TODO: save model object for times when an update would suffice and we don't have all of the samples
 ## TODO: better model accuracy reporting based on CV or side-by-side eval of common colors
 
+# toggle model re-fitting, takes ~ 10 minutes
+reFit <- FALSE
+
+
 library(randomForest)
 library(hexbin)
 library(viridis)
@@ -22,13 +26,21 @@ summary(d)
 ## takes ~ 10 minutes for model fitting
 ## consider use of LAB colorspace for models
 
-# moist from dry
-mv.rf <- randomForest(moist_value ~ dry_value + dry_chroma + dry_hue, data=d, na.action=na.omit)
-mc.rf <- randomForest(moist_chroma ~ dry_value + dry_chroma + dry_hue, data=d, na.action=na.omit)
-
-# dry from moist
-dv.rf <- randomForest(dry_value ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
-dc.rf <- randomForest(dry_chroma ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
+if(reFit) {
+  # moist from dry
+  mv.rf <- randomForest(moist_value ~ dry_value + dry_chroma + dry_hue, data=d, na.action=na.omit)
+  mc.rf <- randomForest(moist_chroma ~ dry_value + dry_chroma + dry_hue, data=d, na.action=na.omit)
+  
+  # dry from moist
+  dv.rf <- randomForest(dry_value ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
+  dc.rf <- randomForest(dry_chroma ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
+  
+  # save for next time
+  save(mv.rf, mc.rf, dv.rf, dc.rf, file='models/missing-color-models.rda')
+} else {
+  # load the models from last time
+  load('models/missing-color-models.rda')
+}
 
 # model accuracy: ~ 65-70% variance explained
 
@@ -90,7 +102,7 @@ g <- rbind(x.original, x)
 
 ## graphical comparison... still needs some work
 
-png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='cairo', antialias = 'subpixel')
+png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='windows', antialias = 'cleartype')
 
 par(mar=c(1,1,3,1))
 groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
@@ -142,18 +154,68 @@ depths(x.o.m) <- seriesname ~ top + bottom
 a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color')
 a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color')
 
-png(file='O-hz-colors-dry.png', width = 900, height=550, res=90, type='cairo', antialias = 'subpixel')
+png(file='O-hz-colors-dry.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
 aggregateColorPlot(a.d, main='Dry Colors')
 dev.off()
 
-png(file='O-hz-colors-moist.png', width = 900, height=550, res=90, type='cairo', antialias = 'subpixel')
+png(file='O-hz-colors-moist.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
 aggregateColorPlot(a.m, main='Moist Colors')
 dev.off()
 
-# knitr::kable(a.d$aggregate.data)
-# knitr::kable(a.m$aggregate.data)
+knitr::kable(a.d$aggregate.data)
+knitr::kable(a.m$aggregate.data)
 
-## TODO: find O horizons that are missing colors, and use these ones
+## find O horizons that are missing colors, and use these ones
+
+# Oi / dry
+idx <- which(grepl('Oi', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '10YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# Oi / moist
+idx <- which(grepl('Oi', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 2
+
+# Oe / dry
+idx <- which(grepl('Oe', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '7.5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# Oe / moist
+idx <- which(grepl('Oe', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 2
+
+# Oa / dry
+idx <- which(grepl('Oa', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '7.5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# Oa / moist
+idx <- which(grepl('Oa', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '10YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 1
+
+# everything else, dry
+idx <- which(grepl('O', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '7.5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# everything else, moist
+idx <- which(grepl('O', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 2
+
+
 
 
 # save result
