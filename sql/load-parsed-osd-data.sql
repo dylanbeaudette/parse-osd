@@ -9,6 +9,8 @@
 --
 -- 2016-10-04: added horizon narrative column
 --
+-- 2018-03-15: filled missing O horizon colors with some reasonable defaults
+--
 
 --
 -- be sure to strip non-ascii characters
