@@ -87,7 +87,6 @@ ORDER BY series;
 -- index
 CREATE INDEX osd_on_file_series_idx ON osd.osd_on_file (series);
 
-COMMIT;
 
 -- permissions
 GRANT SELECT ON osd.osd_site TO soil;
