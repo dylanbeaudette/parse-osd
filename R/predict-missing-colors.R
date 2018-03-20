@@ -227,7 +227,10 @@ plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, t
 points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$moist_soil_color)
 points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$moist_soil_color)
 
-# save result
+
+
+
+## save results
 write.csv(d, file=gzfile('parsed-data-est-colors.csv.gz'), row.names=FALSE)
 
 

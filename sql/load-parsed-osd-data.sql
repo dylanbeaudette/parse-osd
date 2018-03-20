@@ -68,6 +68,11 @@ CREATE INDEX osd_colors_series_idx ON osd_colors (series);
 
 
 --
+-- 2018-03-20: missing top depth likely caused by "O" instead of 0 (OCR error) ~ 99% of the time
+--
+UPDATE osd.osd_colors SET top = 0 WHERE top IS NULL;
+
+--
 -- 2015-11-30: set NULL bottom horizons to top + 1
 --
 UPDATE osd.osd_colors SET bottom = top + 1 WHERE bottom IS NULL;
