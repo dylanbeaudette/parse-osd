@@ -1,4 +1,5 @@
 R/parsed-data.csv.gz
+R/parsed-site-data.csv.gz
 R/parsed-data-est-colors.csv.gz
 R/fulltext-data.csv
 R/fulltext-data.sql
@@ -6,4 +7,5 @@ R/SC-database.csv.gz
 R/fulltext-data.zip
 R/fulltext-section-data.sql
 README.html
-R/logfile.csv
+R/logfile*.csv
+R/problem-OSDs*.txt

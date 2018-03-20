@@ -17,6 +17,7 @@ library(aqp)
 library(sharpshootR)
 
 # from OSDs
+# keep factors so that models function as expected
 d <- read.csv('parsed-data.csv.gz', stringsAsFactors=TRUE)
 
 # initial conditions
@@ -55,7 +56,7 @@ hexbinplot(predict(dc.rf, newdata=d) ~ d$dry_chroma, trans = log, inv=exp, colra
 
 
 ## make a copy of some of the data,  
-x.original <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI'))
+x.original <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI', 'FRISCO'))
 
 # promote to SPC and convert colors
 depths(x.original) <- seriesname ~ top + bottom
@@ -82,56 +83,23 @@ d$dry_hue <- as.character(d$dry_hue)
 d$name <- as.character(d$name)
 d$seriesname <- as.character(d$seriesname)
 
-
 # copy vs. prediction of hue, use moist / dry hue
 d$moist_hue[which(is.na(d$moist_hue))] <- d$dry_hue[which(is.na(d$moist_hue))]
 d$dry_hue[which(is.na(d$dry_hue))] <- d$moist_hue[which(is.na(d$dry_hue))]
 
-## extract same series and compare original vs. filled colors
-x <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI'))
-x$seriesname <- paste0(x$seriesname, '-filled')
-depths(x) <- seriesname ~ top + bottom
-x$dry_soil_color <- munsell2rgb(x$dry_hue, x$dry_value, x$dry_chroma)
-x$moist_soil_color <- munsell2rgb(x$moist_hue, x$moist_value, x$moist_chroma)
 
-# label
-x$group <- rep('Filled', times=length(x))
+## filling missing O horizon colors requires fixing 0->O OCR errors
+idx <- grep('^0', d$name)
+sort(table(d$name[idx]), decreasing = TRUE)
 
-# stack
-g <- rbind(x.original, x)
-
-## graphical comparison... still needs some work
-
-png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='windows', antialias = 'cleartype')
-
-par(mar=c(1,1,3,1))
-groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
-
-dev.off()
-
-groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist Colors')
+# repalce 0 with O
+d$name[idx] <- gsub('0', 'O', d$name[idx])
 
 
-plotMultipleSPC(list(x.original, x.original), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color'), list(color='moist_soil_color')), max.depth=165)
-
-plotMultipleSPC(list(x, x), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color', id.style='side'), list(color='moist_soil_color', id.style='side')), max.depth=165)
-
-par(mar=c(1,1,1,1))
-plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
-points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$dry_soil_color)
-points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$dry_soil_color)
-
-par(mar=c(1,1,1,1))
-plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
-points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$moist_soil_color)
-points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$moist_soil_color)
-
-
-
-## what about missing horizon colors: moist / dry colors missing
+## O horizon colors: moist and dry colors missing
 
 # find some to eval
-x.o <- d[grep('O', d$name), ]
+x.o <- d[grep('^O', d$name), ]
 nrow(x.o)
 head(x.o)
 sort(table(x.o$name), decreasing = TRUE)
@@ -216,7 +184,48 @@ d$moist_value[idx] <- 2
 d$moist_chroma[idx] <- 2
 
 
+##
+## extract same series and compare original vs. filled colors
+##
+x <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI', 'FRISCO'))
+x$seriesname <- paste0(x$seriesname, '-filled')
+depths(x) <- seriesname ~ top + bottom
+x$dry_soil_color <- munsell2rgb(x$dry_hue, x$dry_value, x$dry_chroma)
+x$moist_soil_color <- munsell2rgb(x$moist_hue, x$moist_value, x$moist_chroma)
 
+# label
+x$group <- rep('Filled', times=length(x))
+
+# stack
+g <- rbind(x.original, x)
+
+## graphical comparison... still needs some work
+
+png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='windows', antialias = 'cleartype')
+
+par(mar=c(1,1,3,1))
+groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
+
+dev.off()
+
+groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist Colors')
+
+
+plotMultipleSPC(list(x.original, x.original), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color'), list(color='moist_soil_color')), max.depth=165)
+
+plotMultipleSPC(list(x, x), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color', id.style='side'), list(color='moist_soil_color', id.style='side')), max.depth=165)
+
+## TODO: illustrate missing colors / filled colors / predictions
+
+par(mar=c(1,1,1,1))
+plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
+points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$dry_soil_color)
+points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$dry_soil_color)
+
+par(mar=c(1,1,1,1))
+plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
+points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$moist_soil_color)
+points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$moist_soil_color)
 
 # save result
 write.csv(d, file=gzfile('parsed-data-est-colors.csv.gz'), row.names=FALSE)

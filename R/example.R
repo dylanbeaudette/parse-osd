@@ -22,6 +22,9 @@ testIt <- function(x) {
 }
 
 
+# no simple fix:" "O" instead of "0" in depths and colors
+testIt('kuck')
+
 # works
 testIt('downer')
 
