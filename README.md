@@ -2,6 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2018-07-12: 
 * 2018-03-14: evaluation of missing color and O horizon color gap-filling
 * 2017-08-31: better parsing / searching section data
 * 2017-03-10: fixes to color parsing REGEX, B,Y,N hues (mostly) parsed. still issues with "N 3/"
