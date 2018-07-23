@@ -1,7 +1,7 @@
 # dump the latest version of the SC database from the local NASIS database
 
 library(RODBC)
-library(RPostgreSQL)
+
 
 q <- "SELECT soilseriesname, soiltaxclasslastupdated, mlraoffice, ss.ChoiceName as series_status, taxclname, tord.ChoiceName as tax_order, tso.ChoiceName as tax_suborder, tgg.ChoiceName as tax_grtgroup, ts.ChoiceName as tax_subgrp, ps.ChoiceName as tax_partsize, psm.ChoiceName as tax_partsizemod, ta.ChoiceName as tax_ceactcl, tr.ChoiceName as tax_reaction, tt.ChoiceName as tax_tempcl, originyear, establishedyear, descriptiondateinitial, descriptiondateupdated, benchmarksoilflag, statsgoflag, objwlupdated,  recwlupdated, typelocstareaiidref, typelocstareatypeiidref, soilseriesiid, soilseriesdbiidref, grpiidref 
   FROM ((((((((((soilseries
@@ -18,8 +18,9 @@ q <- "SELECT soilseriesname, soiltaxclasslastupdated, mlraoffice, ss.ChoiceName 
 	ORDER BY soilseries.soilseriesname;"	
 
 
-# setup connection to our pedon database 
-channel <- odbcConnect('nasis_local', uid='NasisSqlRO', pwd='nasisRe@d0n1y')
+# setup connection to our pedon database
+# credentials depend on windows version
+channel <- odbcConnect('nasis_local', uid='NasisSqlRO', pwd='nasisRe@d0n1y365')
 
 # exec query
 d <- sqlQuery(channel, q, stringsAsFactors=FALSE)
