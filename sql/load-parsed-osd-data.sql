@@ -13,9 +13,9 @@
 --
 
 --
--- be sure to strip non-ascii characters
+-- be sure to strip non-ascii characters from input data
 --
--- iconv -c parsed-data-est-colors.csv > parsed-data-est-colors.csv.clean && mv parsed-data-est-colors.csv.clean parsed-data-est-colors.csv
+
 
 
 
