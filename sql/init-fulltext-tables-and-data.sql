@@ -1,13 +1,9 @@
--- note: these files will contain non-ASCII characters and some syntax errors
--- the .sql files set encoding before inserts
---
--- iconv -c fulltext-data.sql > fulltext-data-clean && mv fulltext-data-clean fulltext-data.sql
--- iconv -c fulltext-section-data.sql > fulltext-section-data-clean && mv fulltext-section-data-clean fulltext-section-data.sql
---
--- run manually
--- psql -U postgres ssurgo_combined < fulltext-data.sql
--- psql -U postgres ssurgo_combined < fulltext-section-data.sql
 
+
+
+--
+-- be sure to strip non-ascii characters from input data
+--
 
 set search_path to osd, public;
 \timing
