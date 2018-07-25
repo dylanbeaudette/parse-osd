@@ -7,7 +7,7 @@
 ## TODO: better model accuracy reporting based on CV or side-by-side eval of common colors
 
 # toggle model re-fitting, takes ~ 10 minutes
-reFit <- FALSE
+reFit <- TRUE
 
 
 library(randomForest)
@@ -43,17 +43,35 @@ if(reFit) {
   load('models/missing-color-models.rda')
 }
 
-# model accuracy: ~ 65-70% variance explained
+
+## save a record of model accuracy
+sink(file = 'rf-model-accuracy.txt')
+# moist colors
+print(mv.rf)
+print(mc.rf)
+# dry colors
+print(dv.rf)
+print(dc.rf)
+sink()
 
 ## graphical eval: seems reasonable
 
 ## RF model
+png(filename = 'figures/mv-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
 hexbinplot(predict(mv.rf, newdata=d) ~ d$moist_value, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Moist Value', ylab='Predicted Moist Value')
+dev.off()
+
+png(filename = 'figures/dv-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
 hexbinplot(predict(dv.rf, newdata=d) ~ d$dry_value, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Dry Value', ylab='Predicted Dry Value')
+dev.off()
 
+png(filename = 'figures/mc-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
 hexbinplot(predict(mc.rf, newdata=d) ~ d$moist_chroma, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Moist Chroma', ylab='Predicted Moist Chroma')
-hexbinplot(predict(dc.rf, newdata=d) ~ d$dry_chroma, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma')
+dev.off()
 
+png(filename = 'figures/dc-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
+hexbinplot(predict(dc.rf, newdata=d) ~ d$dry_chroma, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma')
+dev.off()
 
 ## make a copy of some of the data,  
 x.original <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI', 'FRISCO'))
@@ -122,11 +140,11 @@ depths(x.o.m) <- seriesname ~ top + bottom
 a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color')
 a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color')
 
-png(file='O-hz-colors-dry.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
+png(file='figures/O-hz-colors-dry.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
 aggregateColorPlot(a.d, main='Dry Colors')
 dev.off()
 
-png(file='O-hz-colors-moist.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
+png(file='figures/O-hz-colors-moist.png', width = 900, height=550, res=90, type='windows', antialias = 'cleartype')
 aggregateColorPlot(a.m, main='Moist Colors')
 dev.off()
 
@@ -201,19 +219,36 @@ g <- rbind(x.original, x)
 
 ## graphical comparison... still needs some work
 
-png(file='dry-original-vs-filled-example.png', width = 900, height=450, res=90, type='windows', antialias = 'cleartype')
+png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90, type='windows', antialias = 'cleartype')
 
-par(mar=c(1,1,3,1))
+par(mar=c(1,1,3,1), mfrow=c(2,1))
 groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
+groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist Colors')
 
 dev.off()
 
-groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist Colors')
+
+png(file='figures/original-dry-vs-moist.png', width = 900, height=800, res=90, type='windows', antialias = 'cleartype')
+
+par(mar=c(2,1,3,1), mfrow=c(2,1))
+plot(x.original, color='dry_soil_color', max.depth=165)
+title('Original Dry Colors')
+plot(x.original, color='moist_soil_color', max.depth=165)
+title('Original Moist Colors')
+
+dev.off()
 
 
-plotMultipleSPC(list(x.original, x.original), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color'), list(color='moist_soil_color')), max.depth=165)
+png(file='figures/filled-dry-vs-moist.png', width = 900, height=800, res=90, type='windows', antialias = 'cleartype')
 
-plotMultipleSPC(list(x, x), group.labels=c('Dry', 'Moist'), args=list(list(color='dry_soil_color', id.style='side'), list(color='moist_soil_color', id.style='side')), max.depth=165)
+par(mar=c(2,1,3,1), mfrow=c(2,1))
+plot(x, color='dry_soil_color', max.depth=165)
+title('Filled Dry Colors')
+plot(x, color='moist_soil_color', max.depth=165)
+title('Filled Moist Colors')
+
+dev.off()
+
 
 ## TODO: illustrate missing colors / filled colors / predictions
 

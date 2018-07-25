@@ -21,6 +21,8 @@ testIt <- function(x) {
   return(l)
 }
 
+# missing  typical pedon header
+testIt('ARIEL')
 
 # no simple fix:" "O" instead of "0" in depths and colors
 testIt('kuck')

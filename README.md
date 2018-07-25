@@ -2,7 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
-* 2018-07-12: 
+* 2018-07-25: re-parsed OSDs with latest SC database
 * 2018-03-14: evaluation of missing color and O horizon color gap-filling
 * 2017-08-31: better parsing / searching section data
 * 2017-03-10: fixes to color parsing REGEX, B,Y,N hues (mostly) parsed. still issues with "N 3/"
@@ -32,7 +32,7 @@ Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd
 ## Estimation of Missing Dry / Moist Colors
 details pending...
 
-![](R/dry-original-vs-filled-example.png)
+![](R/figures/dry-original-vs-filled-example.png)
 
 
 ## Representative O Horizon Colors
@@ -40,7 +40,7 @@ Most O horizons in the OSD soil color DB are missing colors. What are some of th
 
 
 ### Dry Colors
-![](R/O-hz-colors-dry.png)
+![](R/figures/O-hz-colors-dry.png)
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
 |:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
@@ -50,7 +50,7 @@ Most O horizons in the OSD soil color DB are missing colors. What are some of th
 |not-used |7.5YR       |             4|              2|     0.0316714|#746659 | 0.45371| 0.39936| 0.34802| 14|
 
 ### Moist Colors
-![](R/O-hz-colors-moist.png)
+![](R/figures/O-hz-colors-moist.png)
 
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|

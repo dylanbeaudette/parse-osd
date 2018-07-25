@@ -21,7 +21,7 @@ updateMode <- FALSE
 
 
 # load latest SC-database
-# source('dump-SC-database.R')
+download.file(url = 'https://github.com/ncss-tech/SoilTaxonomy/raw/master/databases/SC-database.csv.gz', destfile = 'SC-database.csv.gz')
 x <- read.csv('SC-database.csv.gz', stringsAsFactors=FALSE)
 
 # keep only those records that are established or tentative
@@ -83,8 +83,9 @@ if(updateMode) {
 }
 
 # cut down to a smaller number of series for testing
-if(testingMode)
+if(testingMode) {
   x <- x[sample(1:length(x), size = 50)]
+}
 
 for(i in x) {
   print(i)
