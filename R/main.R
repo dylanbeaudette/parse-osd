@@ -3,8 +3,9 @@
 ## 
 
 
-## this is likely much faster run on SoilWeb, consider splitting into chunks via gnu parallel
-## ~ 166 series / minute = 106 minutes (actual time)
+## running on soilmap2-1 takes about the same amount of time
+## consider parallel implementation via furrr package
+
 # 1. get / parse data
 source('parse-all-series-via-sc-db.R')
 
