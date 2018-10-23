@@ -21,6 +21,11 @@ testIt <- function(x) {
   return(l)
 }
 
+
+# latest OSD from Kyle
+# informed by his OSD synthesis via NASIS report / components
+testIt('bordengulch')
+
 # missing  typical pedon header
 testIt('ARIEL')
 

@@ -285,10 +285,19 @@ getOSD <- function(s) {
 # x: list of section chunks
 extractSiteData <- function(x) {
   
-  # drainage class
+  ## drainage class
+  
+  # this work for standard OSD format
   drainage.class <- parse_drainage_class(x[['DRAINAGE AND PERMEABILITY']])
   
-  # other things?
+  # alternative for SSR1 updated OSD format
+  # https://casoilresource.lawr.ucdavis.edu/sde/?series=bordengulch
+  if(is.na(drainage.class)) {
+    drainage.class <- parse_drainage_class(x[['BRIEF DESCRIPTION']])
+  }
+  
+  
+  ## other things?
   
   
   # composite into a list for later
