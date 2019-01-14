@@ -26,6 +26,11 @@ sink('tappan-example.txt')
 jsonlite::toJSON(testIt('tappan'), pretty = TRUE)
 sink()
 
+sink('kinross-example.txt')
+jsonlite::toJSON(testIt('kinross'), pretty = TRUE)
+sink()
+
+
 # latest OSD from Kyle
 # informed by his OSD synthesis via NASIS report / components
 testIt('bordengulch')
