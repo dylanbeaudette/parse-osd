@@ -21,6 +21,10 @@ testIt <- function(x) {
   return(l)
 }
 
+# testing for George
+sink('tappan-example.txt')
+jsonlite::toJSON(testIt('tappan'), pretty = TRUE)
+sink()
 
 # latest OSD from Kyle
 # informed by his OSD synthesis via NASIS report / components
