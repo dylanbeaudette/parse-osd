@@ -3,6 +3,21 @@
 
 ## TODO: the parsing functions can be generalized into wrapper and single function that accepts text + classes
 
+testIt <- function(x) {
+  # get data
+  res <- getOSD(x)
+  
+  # init section REGEX: critical for locating brief narrative
+  setSectionREGEX(x)
+  
+  l <- list()
+  l[['sections']] <- extractSections(res)
+  l[['section-indices']] <- findSectionIndices(res)
+  l[['site-data']] <- extractSiteData(l[['sections']])
+  l[['hz-data']] <- extractHzData(res)
+  return(l)
+}
+
 # vectorized parsing of texture class from OSD
 parse_texture <- function(text) {
   # mineral texture classes

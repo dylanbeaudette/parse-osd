@@ -6,30 +6,6 @@ library(aqp)
 
 source('local_functions.R')
 
-testIt <- function(x) {
-  # get data
-  res <- getOSD(x)
-  
-  # init section REGEX: critical for locating brief narrative
-  setSectionREGEX(x)
-  
-  l <- list()
-  l[['sections']] <- extractSections(res)
-  l[['section-indices']] <- findSectionIndices(res)
-  l[['site-data']] <- extractSiteData(l[['sections']])
-  l[['hz-data']] <- extractHzData(res)
-  return(l)
-}
-
-# testing for George
-sink('tappan-example.txt')
-jsonlite::toJSON(testIt('tappan'), pretty = TRUE)
-sink()
-
-sink('kinross-example.txt')
-jsonlite::toJSON(testIt('kinross'), pretty = TRUE)
-sink()
-
 
 # latest OSD from Kyle
 # informed by his OSD synthesis via NASIS report / components
