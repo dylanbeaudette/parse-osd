@@ -7,6 +7,9 @@ library(aqp)
 source('local_functions.R')
 
 
+# 
+testIt('tiger creek')
+
 # latest OSD from Kyle
 # informed by his OSD synthesis via NASIS report / components
 testIt('bordengulch')
