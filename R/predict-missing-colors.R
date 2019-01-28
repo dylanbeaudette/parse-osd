@@ -57,19 +57,19 @@ sink()
 ## graphical eval: seems reasonable
 
 ## RF model
-png(filename = 'figures/mv-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(filename = 'figures/mv-model.png', width=800, height=800, res=90)
 hexbinplot(predict(mv.rf, newdata=d) ~ d$moist_value, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Moist Value', ylab='Predicted Moist Value')
 dev.off()
 
-png(filename = 'figures/dv-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(filename = 'figures/dv-model.png', width=800, height=800, res=90)
 hexbinplot(predict(dv.rf, newdata=d) ~ d$dry_value, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Dry Value', ylab='Predicted Dry Value')
 dev.off()
 
-png(filename = 'figures/mc-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(filename = 'figures/mc-model.png', width=800, height=800, res=90)
 hexbinplot(predict(mc.rf, newdata=d) ~ d$moist_chroma, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Moist Chroma', ylab='Predicted Moist Chroma')
 dev.off()
 
-png(filename = 'figures/dc-model.png', width=800, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(filename = 'figures/dc-model.png', width=800, height=800, res=90)
 hexbinplot(predict(dc.rf, newdata=d) ~ d$dry_chroma, trans = log, inv=exp, colramp=viridis, asp=1, xbins=15, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma')
 dev.off()
 
@@ -137,14 +137,14 @@ depths(x.o.d) <- seriesname ~ top + bottom
 depths(x.o.m) <- seriesname ~ top + bottom
 
 # aggregate colors
-a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color')
-a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color')
+a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color', k=10)
+a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color', k=10)
 
-png(file='figures/O-hz-colors-dry.png', width = 900, height=550, res=90, type='cairo', antialias = 'subpixel')
+png(file='figures/O-hz-colors-dry.png', width = 900, height=550, res=90)
 aggregateColorPlot(a.d, main='Dry Colors')
 dev.off()
 
-png(file='figures/O-hz-colors-moist.png', width = 900, height=550, res=90, type='cairo', antialias = 'subpixel')
+png(file='figures/O-hz-colors-moist.png', width = 900, height=550, res=90)
 aggregateColorPlot(a.m, main='Moist Colors')
 dev.off()
 
@@ -215,11 +215,11 @@ x$moist_soil_color <- munsell2rgb(x$moist_hue, x$moist_value, x$moist_chroma)
 x$group <- rep('Filled', times=length(x))
 
 # stack
-g <- rbind(x.original, x)
+g <- union(list(x.original, x))
 
 ## graphical comparison... still needs some work
 
-png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90)
 
 par(mar=c(1,1,3,1), mfrow=c(2,1))
 groupedProfilePlot(g, groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
@@ -228,7 +228,7 @@ groupedProfilePlot(g, groups='group', color='moist_soil_color') ; title('Moist C
 dev.off()
 
 
-png(file='figures/original-dry-vs-moist.png', width = 900, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(file='figures/original-dry-vs-moist.png', width = 900, height=800, res=90)
 
 par(mar=c(2,1,3,1), mfrow=c(2,1))
 plot(x.original, color='dry_soil_color', max.depth=165)
@@ -239,7 +239,7 @@ title('Original Moist Colors')
 dev.off()
 
 
-png(file='figures/filled-dry-vs-moist.png', width = 900, height=800, res=90, type='cairo', antialias = 'subpixel')
+png(file='figures/filled-dry-vs-moist.png', width = 900, height=800, res=90)
 
 par(mar=c(2,1,3,1), mfrow=c(2,1))
 plot(x, color='dry_soil_color', max.depth=165)
