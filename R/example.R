@@ -10,6 +10,14 @@ source('local_functions.R')
 # 
 testIt('tiger creek')
 
+# TYPICAL PEDON section is mis-labeled
+# https://casoilresource.lawr.ucdavis.edu/sde/?series=MEIKLE
+testIt('MEIKLE')
+
+# O insteat of 0 in "1OYR 6/3"
+# https://casoilresource.lawr.ucdavis.edu/sde/?series=ESPARTO
+testIt('ESPARTO')
+
 # latest OSD from Kyle
 # informed by his OSD synthesis via NASIS report / components
 testIt('bordengulch')

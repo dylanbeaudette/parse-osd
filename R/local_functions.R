@@ -3,6 +3,68 @@
 
 ## TODO: the parsing functions can be generalized into wrapper and single function that accepts text + classes
 
+
+downloadParseSave <- function(i) {
+  
+  # get OSD
+  # result is a list
+  i.lines <- try(getOSD(i), silent = TRUE)
+  
+  # no OSD...
+  if(class(i.lines) == 'try-error')
+    return(FALSE)
+  
+  # output as list
+  res <- list()
+  
+  # register section REGEX
+  # this sets / updates a global variable
+  setSectionREGEX(i)
+  
+  # get rendered HTML->text and save to file 
+  # store gzip-compressd OSD for bulk INSERT
+  res[['fulltext']] <- memCompress(ConvertToFullTextRecord(i, i.lines), type='gzip')
+  
+  ## previously:
+  # cat(i.fulltext, file = 'fulltext-data.sql', append = TRUE)
+  
+  # split data into sections for fulltext search, catch errors related to parsing sections
+  i.sections <- try(ConvertToFullTextRecord2(i, i.lines))
+  if(class(i.sections) != 'try-error') {
+    
+    # store gzip-compressd sections for bulk INSERT
+    res[['sections']] <- memCompress(i.sections, type='gzip')
+    
+    ## previously:
+    cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
+  }
+  
+  
+  # append hz data to our list, catch errors related to parsing sections
+  hz.data <- try(extractHzData(i.lines), silent = TRUE)
+  
+  # append site data to our list, catch errors related to parsing sections
+  section.data <- try(extractSections(i.lines), silent = TRUE)
+  site.data <- try(extractSiteData(section.data), silent = TRUE)
+  
+  # try-error means no OSD
+  if(class(hz.data) != 'try-error') {
+    res[['hz']] <- hz.data
+  }
+  
+  # try-error means sections / site data not parsed
+  if(class(site.data) != 'try-error') {
+    res[['site']] <- site.data
+  }
+  
+  return(res)
+}
+
+# use this approach to make the wrapper "safe"
+downloadParseSave.safe <- safely(downloadParseSave)
+
+
+
 testIt <- function(x) {
   # get data
   res <- getOSD(x)
