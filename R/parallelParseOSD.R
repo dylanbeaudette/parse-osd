@@ -37,7 +37,10 @@ plan(multisession)
 # ~ 80 sec sequential [100 series]
 # ~ 12 sec parallel   [100 series]
 # ~ 28 seconds parallel [250 random series]
-system.time(res <- future_map(x[sample(1:length(x), size = 250)], downloadParseSave.safe, .progress=TRUE))
+# system.time(res <- future_map(x[sample(1:length(x), size = 250)], downloadParseSave.safe, .progress=TRUE))
+
+# full set
+system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
 
 
 ## TODO: iterate over results and save:
@@ -76,4 +79,5 @@ z <- map(res, pluck, 'result', 'site')
 # write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
 # 
 
-
+# stop back-ends
+plan(sequential)
