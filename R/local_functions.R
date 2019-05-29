@@ -49,11 +49,15 @@ downloadParseSave <- function(i) {
   
   # try-error means no OSD
   if(class(hz.data) != 'try-error') {
+    # add seriesname to final column
+    hz.data$seriesname <- i
     res[['hz']] <- hz.data
   }
   
   # try-error means sections / site data not parsed
   if(class(site.data) != 'try-error') {
+    # add seriesname to final column
+    site.data$seriesname <- i
     res[['site']] <- site.data
   }
   
@@ -72,11 +76,13 @@ testIt <- function(x) {
   # init section REGEX: critical for locating brief narrative
   setSectionREGEX(x)
   
+  # extract sections
   l <- list()
   l[['sections']] <- extractSections(res)
   l[['section-indices']] <- findSectionIndices(res)
   l[['site-data']] <- extractSiteData(l[['sections']])
   l[['hz-data']] <- extractHzData(res)
+  
   return(l)
 }
 
