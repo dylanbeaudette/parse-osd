@@ -1,12 +1,14 @@
 library(soilDB)
 library(stringi)
+library(purrr)
+library(aqp)
 
 source('local_functions.R')
 
-s.list <- c('musick', 'cecil', 'drummer', 'amador', 'pentz', 'pardee', 'inks', 'capay', 'whiterock', 'reiff')
+# s.list <- c('musick', 'cecil', 'drummer', 'amador', 'pentz', 'pardee', 'inks', 'capay', 'whiterock', 'reiff')
+# x <- fetchOSD(s.list)
 
-x <- fetchOSD(s.list)
-
+x <- fetchOSD('cecil')
 
 
 x$texture_class <- parse_texture(x$narrative)
