@@ -6,12 +6,15 @@
 ## running on soilmap2-1 takes about the same amount of time
 ## consider parallel implementation via furrr package
 
-# 1. get / parse data
+## 1. get / parse data
+# ~ 4-5 hours with single thread
 source('parse-all-series-via-sc-db.R')
+# ~ 42 minutes parallel
+source('parallelParseOSD.R')
 
-## ~ 4 minutes run time
-##  
-# 2. fill-in missing colors using brute force modeling approach
+
+## 2. fill-in missing colors using brute force modeling approach
+# ~ 4 minutes run time
 source('predict-missing-colors.R')
 
 # 3. send to SoilWeb
