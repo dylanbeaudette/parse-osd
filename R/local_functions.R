@@ -61,7 +61,7 @@ downloadParseSave <- function(i) {
 }
 
 # use this approach to make the wrapper "safe"
-downloadParseSave.safe <- safely(downloadParseSave)
+downloadParseSave.safe <- purrr::safely(downloadParseSave)
 
 
 
@@ -82,11 +82,14 @@ testIt <- function(x) {
 
 # vectorized parsing of texture class from OSD
 parse_texture <- function(text) {
-  # mineral texture classes
+  # mineral texture classes, sorted from coarse -> fine
   textures <- c('coarse sand', 'sand', 'fine sand', 'very fine sand', 'loamy coarse sand', 'loamy sand', 'loamy fine sandy', 'loamy very fine sand', 'coarse sandy loam', 'sandy loam', 'fine sandy loam', 'very fine sandy loam', 'loam', 'silt loam', 'silt', 'sand clay loam', 'clay loam', 'silty clay loam', 'sandy clay', 'silty clay', 'clay')
   
   # combine into capturing REGEX
   texture.regex <- paste0('(', paste(textures, collapse='|'), ')')
+  
+  ## TODO: this is too greedy as 'fine sand' will be found _within_ 'fine sandy loam'
+  # https://github.com/dylanbeaudette/parse-osd/issues/10
   
   # get matches
   m <- stri_match(text, regex = texture.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
@@ -150,7 +153,7 @@ parse_pH <- function(text) {
 parse_pH_class <- function(text) {
   
   # mineral texture classes
-  pH_classes <- c('ultra acid', 'extremely acid', 'vert strongly acid', 'strongly acid', 'moderately acid', 'slightly acid', 'neutral', 'slightly alkaline', 'mildly alkaline', 'moderately alkaline', 'strongly alkaline', 'very strongly alkaline')
+  pH_classes <- c('ultra acid', 'extremely acid', 'very strongly acid', 'strongly acid', 'moderately acid', 'slightly acid', 'neutral', 'slightly alkaline', 'mildly alkaline', 'moderately alkaline', 'strongly alkaline', 'very strongly alkaline')
   
   # combine into capturing REGEX
   pH_classes.regex <- paste0('(', paste(pH_classes, collapse='|'), ')')
