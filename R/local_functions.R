@@ -80,26 +80,63 @@ testIt <- function(x) {
   return(l)
 }
 
+
+## safely (efficiently?) find specific classes within a vector of narratives
+# needle: class labels
+# haystack: narrative by horizon
+findClass <- function(needle, haystack) {
+  # iterate over vector of horizon narratives, searching for exact matches
+  test.by.hz <- lapply(haystack, stri_detect_fixed, pattern = needle, opts_fixed = list(case_insensitive=TRUE))
+  
+  # iterate over search results by horizon, keeping names of matching classes 
+  matches <- lapply(test.by.hz, function(i) {
+    needle[i]
+  })
+  
+  # compute number of characters: longer matches are the most specific / correct
+  res <- map_chr(matches, function(i) {
+    
+    # find the longest matching string
+    idx <- which.max(nchar(i))
+    
+    # extract it
+    m <- i[idx]
+    
+    # convert _nothing_ into NA
+    if(length(m) > 0) {
+      return(m)
+    } else {
+      return(NA)
+    }
+    
+  })
+  
+  return(res)
+}
+
+
 # vectorized parsing of texture class from OSD
 parse_texture <- function(text) {
   # mineral texture classes, sorted from coarse -> fine
-  textures <- c('coarse sand', 'sand', 'fine sand', 'very fine sand', 'loamy coarse sand', 'loamy sand', 'loamy fine sandy', 'loamy very fine sand', 'coarse sandy loam', 'sandy loam', 'fine sandy loam', 'very fine sandy loam', 'loam', 'silt loam', 'silt', 'sand clay loam', 'clay loam', 'silty clay loam', 'sandy clay', 'silty clay', 'clay')
-  
-  # combine into capturing REGEX
-  texture.regex <- paste0('(', paste(textures, collapse='|'), ')')
+  textures <- c('coarse sand', 'sand', 'fine sand', 'very fine sand', 'loamy coarse sand', 'loamy sand', 'loamy fine sand', 'loamy very fine sand', 'coarse sandy loam', 'sandy loam', 'fine sandy loam', 'very fine sandy loam', 'loam', 'silt loam', 'silt', 'sandy clay loam', 'clay loam', 'silty clay loam', 'sandy clay', 'silty clay', 'clay')
   
   ## TODO: this is too greedy as 'fine sand' will be found _within_ 'fine sandy loam'
   # https://github.com/dylanbeaudette/parse-osd/issues/10
   
-  # get matches
-  m <- stri_match(text, regex = texture.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
-  
-  # fail gracefully in the case of no section data or no matches
-  if(nrow(m) < 1)
-    return(NA)
-  
-  # keep only matches and convert to lower case
-  m <- tolower(m[, 2])
+  # combine into capturing REGEX
+  # texture.regex <- paste0('(', paste(textures, collapse='|'), ')')
+  # 
+  # # get matches
+  # m <- stri_match(text, regex = texture.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  # 
+  # # fail gracefully in the case of no section data or no matches
+  # if(nrow(m) < 1)
+  #   return(NA)
+  # 
+  # # keep only matches and convert to lower case
+  # m <- tolower(m[, 2])
+  m <- findClass(needle=textures, haystack=text)
+  m <- tolower(m)
   
   # convert to ordered factor
   m <- factor(m, levels=textures, ordered = TRUE)

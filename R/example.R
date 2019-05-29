@@ -1,4 +1,5 @@
 library(stringi)
+library(purrr)
 library(httr)
 library(rvest)
 library(plyr)
