@@ -39,13 +39,33 @@ plan(multisession)
 # ~ 28 seconds parallel [250 random series]
 # system.time(res <- future_map(x[sample(1:length(x), size = 250)], downloadParseSave.safe, .progress=TRUE))
 
-# full set
+# full set: ~ 41 minutes
 system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
 
 
+## process horizon data
+z <- map(res, pluck, 'result', 'hz')
+# remove NULL
+idx <- which(! sapply(z, is.null))
+z <- z[idx]
+# convert to data.frame (~ 15 seconds)
+d <- do.call('rbind', z)
+# save
+write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
+
+## process site data
+z <- map(res, pluck, 'result', 'site')
+# remove NULL
+idx <- which(! sapply(z, is.null))
+z <- z[idx]
+# convert to data.frame (~ 15 seconds)
+d <- do.call('rbind', z)
+# save
+write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
+
+
 ## TODO: iterate over results and save:
-# hz data
-# site data
+
 # un-compressed fulltext
 # un-compressed sections
 
@@ -59,25 +79,12 @@ system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
 ## extract pieces
 z <- map(res, pluck, 'result', 'fulltext')
 z <- map(res, pluck, 'result', 'sections')
-z <- map(res, pluck, 'result', 'hz')
-z <- map(res, pluck, 'result', 'site')
-
-## remove NULL / add series name
 
 
 
-# # convert parsed horizon data to DF and save
-# d <- ldply(l)
-# d$seriesname <- d$.id
-# d$.id <- NULL
-# write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
-# 
-# # convert parsed site data to DF and save
-# d <- ldply(sl)
-# d$seriesname <- d$.id
-# d$.id <- NULL
-# write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
-# 
+
+
+
 
 # stop back-ends
 plan(sequential)
