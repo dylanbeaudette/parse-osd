@@ -135,6 +135,8 @@ parse_texture <- function(text) {
   # 
   # # keep only matches and convert to lower case
   # m <- tolower(m[, 2])
+  
+  ## 2019-05-29: generalized for all non-greedy, exact matching
   m <- findClass(needle=textures, haystack=text)
   m <- tolower(m)
   
@@ -149,6 +151,10 @@ parse_CF <- function(text) {
   cf.type <- c('gravelly', 'cobbly', 'stony', 'bouldery', 'channery', 'flaggy')
   cf.qty <- c('', 'very ', 'extremely ')
   cf <- apply(expand.grid(cf.qty, cf.type), 1, paste, collapse='')
+  
+  
+  ## TODO: this is too greedy as 'fine sand' will be found _within_ 'fine sandy loam'
+  # https://github.com/dylanbeaudette/parse-osd/issues/10
   
   # combine into capturing REGEX
   cf.regex <- paste0('(', paste(cf, collapse='|'), ')')
@@ -192,18 +198,9 @@ parse_pH_class <- function(text) {
   # mineral texture classes
   pH_classes <- c('ultra acid', 'extremely acid', 'very strongly acid', 'strongly acid', 'moderately acid', 'slightly acid', 'neutral', 'slightly alkaline', 'mildly alkaline', 'moderately alkaline', 'strongly alkaline', 'very strongly alkaline')
   
-  # combine into capturing REGEX
-  pH_classes.regex <- paste0('(', paste(pH_classes, collapse='|'), ')')
-  
-  # get matches
-  m <- stri_match(text, regex = pH_classes.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
- 
-  # fail gracefully in the case of no section data or no matches
-  if(nrow(m) < 1)
-    return(NA)
-  
-  # keep only matches and convert to lower case
-  m <- tolower(m[, 2])
+  ## 2019-05-29: generalized for all non-greedy, exact matching
+  m <- findClass(needle=pH_classes, haystack=text)
+  m <- tolower(m)
   
   # return as an ordered factor acidic -> basic
   m <- factor(m, levels=pH_classes, ordered = TRUE)
@@ -218,6 +215,10 @@ parse_drainage_class <- function(text) {
   # drainage classes, in order, lower case
   classes <- c("excessively", "somewhat excessively", "well", "moderately well", 
                         "somewhat poorly", "poorly", "very poorly", "subaqueous")
+  
+  ## TODO: this is too greedy as 'fine sand' will be found _within_ 'fine sandy loam'
+  # https://github.com/dylanbeaudette/parse-osd/issues/10
+  
   
   # combine into capturing REGEX
   classes.regex <- paste0('(', paste(classes, collapse='|'), ')')
