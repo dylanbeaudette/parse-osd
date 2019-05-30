@@ -34,6 +34,9 @@ plan(multisession)
 system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
 
 
+# stop back-ends
+plan(sequential)
+
 ## process horizon data
 z <- map(res, pluck, 'result', 'hz')
 # remove NULL
@@ -49,7 +52,7 @@ z <- map(res, pluck, 'result', 'site')
 # remove NULL
 idx <- which(! sapply(z, is.null))
 z <- z[idx]
-# convert to data.frame (~ 15 seconds)
+# convert to data.frame (~ 1 seconds)
 d <- do.call('rbind', z)
 # save
 write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
@@ -58,14 +61,28 @@ write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
 
 ## process fulltext
 z <- map(res, pluck, 'result', 'fulltext')
+# iterate over list elements and write to file (~ 5 minutes, slow due to scanning)
+makeFullTextTable(z)
 
 # process sections
 z <- map(res, pluck, 'result', 'sections')
-
-# memDecompress(res$BATHEL$result$fulltext, type = 'gzip', asChar = TRUE)
-# memDecompress(res$BATHEL$result$sections, type = 'gzip', asChar = TRUE)
+makeFullTextSectionsTable(z)
 
 
+## TODO: finish error checking and "problem OSDs"
 
-# stop back-ends
-plan(sequential)
+# # save dated log file
+# write.csv(logdata, file=paste0('logfile-', Sys.Date(), '.csv'), row.names=FALSE)
+# 
+# # ID those series that were not parsed
+# parse.errors <- logdata$.id[which(! logdata$`hz-data` & logdata$sections)]
+# cat(parse.errors, file=paste0('problem-OSDs-', Sys.Date(), '.txt'), sep = '\n')
+
+
+
+
+
+## done, now fill missing colors via supervised classification
+
+
+
