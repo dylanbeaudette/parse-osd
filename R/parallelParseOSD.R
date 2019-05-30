@@ -40,7 +40,7 @@ z <- map(res, pluck, 'result', 'hz')
 idx <- which(! sapply(z, is.null))
 z <- z[idx]
 # convert to data.frame (~ 15 seconds)
-d <- do.call('rbind.fill', z)
+d <- do.call('rbind', z)
 # save
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
