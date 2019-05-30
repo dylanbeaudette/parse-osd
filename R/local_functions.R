@@ -8,7 +8,7 @@ makeFullTextTable <- function(fullTextList, outputFile='fulltext-data.sql') {
   # reset fulltext SQL file
   cat('DROP TABLE osd.osd_fulltext;\n', file=outputFile)
   cat('CREATE TABLE osd.osd_fulltext (series citext, fulltext text);\n', file=outputFile, append = TRUE)
-  cat("set client_encoding to 'latin1 ;\n", file=outputFile, append = TRUE)
+  cat("set client_encoding to 'latin1' ;\n", file=outputFile, append = TRUE)
   
   # remove NULL elements
   idx <- which(! sapply(fullTextList, is.null))
@@ -47,7 +47,7 @@ remarks text,
 established text,
 additional_data text
     );\n', file='fulltext-section-data.sql', append = TRUE)
-  cat("set client_encoding to 'latin1 ;\n", file='fulltext-section-data.sql', append = TRUE)
+  cat("set client_encoding to 'latin1' ;\n", file='fulltext-section-data.sql', append = TRUE)
   
   # remove NULL elements
   idx <- which(! sapply(fullTextList, is.null))
