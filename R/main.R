@@ -3,9 +3,6 @@
 ## 
 
 
-## running on soilmap2-1 takes about the same amount of time
-## consider parallel implementation via furrr package
-
 ## 1. get / parse data
 # ~ 4-5 hours with single thread
 # source('parse-all-series-via-sc-db.R')

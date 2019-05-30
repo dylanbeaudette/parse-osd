@@ -1,7 +1,66 @@
 
-### TODO: test / move into aqp ###
+### TODO: test / move into soilDB ###
 
 ## TODO: the parsing functions can be generalized into wrapper and single function that accepts text + classes
+
+# re-make entire fulltext table, containing an OSD per record
+makeFullTextTable <- function(fullTextList, outputFile='fulltext-data.sql') {
+  # reset fulltext SQL file
+  cat('DROP TABLE osd.osd_fulltext;\n', file=outputFile)
+  cat('CREATE TABLE osd.osd_fulltext (series citext, fulltext text);\n', file=outputFile, append = TRUE)
+  cat("set client_encoding to 'latin1 ;\n", file=outputFile, append = TRUE)
+  
+  # remove NULL elements
+  idx <- which(! sapply(fullTextList, is.null))
+  fullTextList <- fullTextList[idx]
+  
+  # iterate over list elements and write to file
+  # source text is gzip compressed
+  n <- lapply(fullTextList, function(i) {
+    # decompress text on the fly
+    txt <- memDecompress(i, type = 'gzip', asChar = TRUE)
+    cat(txt, file = outputFile, append = TRUE)
+  })
+}
+
+
+# re-make sectioned fulltext table, containing an OSD per record
+makeFullTextSectionsTable <- function(fullTextList, outputFile='fulltext-section-data.sql') {
+  
+  # reset fulltext SQL file
+  # need to adjust fields manually as we edit
+  cat('DROP TABLE osd.osd_fulltext2;\n', file='fulltext-section-data.sql')
+  cat('CREATE TABLE osd.osd_fulltext2 (
+series citext,
+brief_narrative text,
+taxonomic_class text,
+typical_pedon text,
+type_location text,
+ric text,
+competing_series text,
+geog_location text,
+geog_assoc_soils text,
+drainage text,
+use_and_veg text,
+distribution text,
+remarks text,
+established text,
+additional_data text
+    );\n', file='fulltext-section-data.sql', append = TRUE)
+  cat("set client_encoding to 'latin1 ;\n", file='fulltext-section-data.sql', append = TRUE)
+  
+  # remove NULL elements
+  idx <- which(! sapply(fullTextList, is.null))
+  fullTextList <- fullTextList[idx]
+  
+  # iterate over list elements and write to file
+  # source text is gzip compressed
+  n <- lapply(fullTextList, function(i) {
+    # decompress text on the fly
+    txt <- memDecompress(i, type = 'gzip', asChar = TRUE)
+    cat(txt, file = outputFile, append = TRUE)
+  })
+}
 
 
 downloadParseSave <- function(i) {
