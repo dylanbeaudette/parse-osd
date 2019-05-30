@@ -2,6 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2019-05-30: re-parsed OSDs
 * 2019-01-28: re-parsed OSDs with latest SC database
 * 2018-10-01: re-parsed OSDs with latest SC database
 * 2018-07-25: re-parsed OSDs with latest SC database
