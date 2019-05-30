@@ -1,4 +1,3 @@
-
 library(stringi)
 library(httr)
 library(plyr)
@@ -6,16 +5,8 @@ library(rvest)
 library(purrr)
 library(furrr)
 
+# functions used here, some of which will go to soilDB
 source('local_functions.R')
-
-
-
-## TODO: abstract the for-loop into a set of functions for 
-## * getting data
-## * processing chunks
-## * saving fulltext ---> is this even possible with parallel exec?
-##   may have to save into multiple files
-
 
 
 # load latest SC-database
@@ -31,7 +22,7 @@ x <- x$soilseriesname
 names(x) <- x
 
 
-# init parallel processing, seems to work ~ 2x speedup
+# init parallel processing, works on macos and windows
 plan(multisession)
 
 # ~ 80 sec sequential [100 series]
@@ -49,7 +40,7 @@ z <- map(res, pluck, 'result', 'hz')
 idx <- which(! sapply(z, is.null))
 z <- z[idx]
 # convert to data.frame (~ 15 seconds)
-d <- do.call('rbind', z)
+d <- do.call('rbind.fill', z)
 # save
 write.csv(d, file=gzfile('parsed-data.csv.gz'), row.names=FALSE)
 
@@ -64,25 +55,15 @@ d <- do.call('rbind', z)
 write.csv(d, file=gzfile('parsed-site-data.csv.gz'), row.names=FALSE)
 
 
-## TODO: iterate over results and save:
 
-# un-compressed fulltext
-# un-compressed sections
+## process fulltext
+z <- map(res, pluck, 'result', 'fulltext')
 
+# process sections
+z <- map(res, pluck, 'result', 'sections')
 
 # memDecompress(res$BATHEL$result$fulltext, type = 'gzip', asChar = TRUE)
 # memDecompress(res$BATHEL$result$sections, type = 'gzip', asChar = TRUE)
-
-# single element
-# z <- pluck(res[[1]], 1, 1, 'hz')
-
-## extract pieces
-z <- map(res, pluck, 'result', 'fulltext')
-z <- map(res, pluck, 'result', 'sections')
-
-
-
-
 
 
 

@@ -8,7 +8,7 @@
 
 ## 1. get / parse data
 # ~ 4-5 hours with single thread
-source('parse-all-series-via-sc-db.R')
+# source('parse-all-series-via-sc-db.R')
 # ~ 42 minutes parallel
 source('parallelParseOSD.R')
 
@@ -18,6 +18,8 @@ source('parallelParseOSD.R')
 source('predict-missing-colors.R')
 
 # 3. send to SoilWeb
+
+
 
 # 4. re-load data: see sql/ dir in this repo
 
