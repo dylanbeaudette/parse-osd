@@ -5,8 +5,8 @@ Call:
                      Number of trees: 500
 No. of variables tried at each split: 1
 
-          Mean of squared residuals: 0.4091412
-                    % Var explained: 65.17
+          Mean of squared residuals: 0.4107881
+                    % Var explained: 65.04
 
 Call:
  randomForest(formula = moist_chroma ~ dry_value + dry_chroma +      dry_hue, data = d, na.action = na.omit) 
@@ -14,8 +14,8 @@ Call:
                      Number of trees: 500
 No. of variables tried at each split: 1
 
-          Mean of squared residuals: 0.452305
-                    % Var explained: 70.39
+          Mean of squared residuals: 0.4512535
+                    % Var explained: 70.45
 
 Call:
  randomForest(formula = dry_value ~ moist_value + moist_chroma +      moist_hue, data = d, na.action = na.omit) 
@@ -23,8 +23,8 @@ Call:
                      Number of trees: 500
 No. of variables tried at each split: 1
 
-          Mean of squared residuals: 0.4786999
-                    % Var explained: 63.69
+          Mean of squared residuals: 0.478406
+                    % Var explained: 63.71
 
 Call:
  randomForest(formula = dry_chroma ~ moist_value + moist_chroma +      moist_hue, data = d, na.action = na.omit) 
@@ -32,5 +32,5 @@ Call:
                      Number of trees: 500
 No. of variables tried at each split: 1
 
-          Mean of squared residuals: 0.4929613
-                    % Var explained: 68.26
+          Mean of squared residuals: 0.4929354
+                    % Var explained: 68.24
