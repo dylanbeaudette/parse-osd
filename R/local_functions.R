@@ -32,11 +32,11 @@ downloadParseSave <- function(i) {
   i.sections <- try(ConvertToFullTextRecord2(i, i.lines))
   if(class(i.sections) != 'try-error') {
     
-    # store gzip-compressd sections for bulk INSERT
+    # store gzip-compressed sections for bulk INSERT
     res[['sections']] <- memCompress(i.sections, type='gzip')
     
     ## previously:
-    cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
+    # cat(i.sections, file = 'fulltext-section-data.sql', append = TRUE)
   }
   
   
@@ -47,15 +47,15 @@ downloadParseSave <- function(i) {
   section.data <- try(extractSections(i.lines), silent = TRUE)
   site.data <- try(extractSiteData(section.data), silent = TRUE)
   
-  # try-error means no OSD
-  if(class(hz.data) != 'try-error') {
+  # append if result was a data.frame
+  if(class(hz.data) == 'data.frame') {
     # add seriesname to final column
     hz.data$seriesname <- i
     res[['hz']] <- hz.data
   }
   
-  # try-error means sections / site data not parsed
-  if(class(site.data) != 'try-error') {
+  # append if result was a data.frame
+  if(class(site.data) == 'data.frame') {
     # add seriesname to final column
     site.data$seriesname <- i
     res[['site']] <- site.data
