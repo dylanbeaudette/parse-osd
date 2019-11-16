@@ -1,0 +1,105 @@
+library(hexbin)
+library(viridis)
+library(aqp)
+library(sharpshootR)
+library(rms)
+library(farver)
+
+# from OSDs
+d <- read.csv('parsed-data.csv.gz', stringsAsFactors=FALSE)
+
+# check initial conditions
+summary(d)
+
+# perform estimation in CIE LAB
+
+# dry colors
+dry.lab <- with(d, munsell2rgb(the_hue = dry_hue, the_value = dry_value, the_chroma = dry_chroma, returnLAB = TRUE))
+names(dry.lab) <- c('dry_L', 'dry_A', 'dry_B')
+
+# moist colors
+moist.lab <- with(d, munsell2rgb(the_hue = moist_hue, the_value = moist_value, the_chroma = moist_chroma, returnLAB = TRUE))
+names(moist.lab) <- c('moist_L', 'moist_A', 'moist_B')
+
+# check: OK
+summary(dry.lab)
+summary(moist.lab)
+
+# combine: ok
+lab <- cbind(dry.lab, moist.lab)
+nrow(lab) == nrow(d)
+
+# remove NA: ok
+lab <- na.omit(lab)
+nrow(lab)
+
+# model
+dd <- datadist(lab)
+options(datadist="dd")
+
+# dry from moist
+(m.L.dry <- ols(dry_L ~ rcs(moist_L) + moist_A + moist_B, data=lab))
+(m.A.dry <- ols(dry_A ~ moist_L + rcs(moist_A) + moist_B, data=lab))
+(m.B.dry <- ols(dry_B ~ moist_L + moist_A + rcs(moist_B), data=lab))
+
+plot(Predict(m.L.dry))
+plot(Predict(m.A.dry))
+plot(Predict(m.B.dry))
+
+anova(m.L.dry)
+anova(m.A.dry)
+anova(m.B.dry)
+
+# moist from dry
+(m.L.moist <- ols(moist_L ~ rcs(dry_L) + dry_A + dry_B, data=lab))
+(m.A.moist <- ols(moist_A ~ dry_L + rcs(dry_A) + dry_B, data=lab))
+(m.B.moist <- ols(moist_B ~ dry_L + dry_A + rcs(dry_B), data=lab))
+
+plot(Predict(m.L.moist))
+plot(Predict(m.A.moist))
+plot(Predict(m.B.moist))
+
+anova(m.L.moist)
+anova(m.A.moist)
+anova(m.B.moist)
+
+## predictions from full set
+pp.L.dry <- predict(m.L.dry)
+pp.A.dry <- predict(m.A.dry)
+pp.B.dry <- predict(m.B.dry)
+
+pp.L.moist <- predict(m.L.moist)
+pp.A.moist <- predict(m.A.moist)
+pp.B.moist <- predict(m.B.moist)
+
+pp.dry <- data.frame(pp.L.dry, pp.A.dry, pp.B.dry)
+pp.moist <- data.frame(pp.L.moist, pp.A.moist, pp.B.moist)
+
+
+# combine
+z <- cbind(lab, pp.dry, pp.moist)
+s <- z[sample(1:nrow(z), size = 8), ]
+
+dry.cols <- rgb2munsell(convert_colour(s[, c('dry_L', 'dry_A', 'dry_B')], from = 'lab', to = 'rgb') / 255)
+pred.dry.cols <- rgb2munsell(convert_colour(s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from = 'lab', to = 'rgb') / 255)
+
+dry.cols <- sprintf("%s %s/%s", dry.cols$hue, dry.cols$value, dry.cols$chroma)
+pred.dry.cols <- sprintf("%s %s/%s", pred.dry.cols$hue, pred.dry.cols$value, pred.dry.cols$chroma)
+
+colorContrastPlot(dry.cols, pred.dry.cols)
+
+
+
+hexbinplot(pp.L.dry ~ lab$dry_L, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry L', ylab='Predicted Dry L')
+hexbinplot(pp.A.dry ~ lab$dry_A, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry A', ylab='Predicted Dry A')
+hexbinplot(pp.B.dry ~ lab$dry_B, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry B', ylab='Predicted Dry B')
+
+## way too slow -- don't need all pair-wise comparisons, just between single obs
+dE00 <- compare_colour(s[, c('dry_L', 'dry_A', 'dry_B')], to = s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from_space = 'lab', method = 'CIE2000')
+
+
+## check a couple
+
+
+
+
