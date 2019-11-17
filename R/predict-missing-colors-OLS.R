@@ -5,6 +5,8 @@ library(sharpshootR)
 library(rms)
 library(farver)
 
+## TODO: try munsell value / chroma only
+
 # from OSDs
 d <- read.csv('parsed-data.csv.gz', stringsAsFactors=FALSE)
 
@@ -78,7 +80,25 @@ pp.moist <- data.frame(pp.L.moist, pp.A.moist, pp.B.moist)
 
 # combine
 z <- cbind(lab, pp.dry, pp.moist)
+
+# operate by row, no need for pair-wise comparisons
+dE00.dry <- vector(mode = 'numeric', length = nrow(z))
+dE00.moist <- vector(mode = 'numeric', length = nrow(z))
+
+for(i in 1:nrow(z)) {
+  dE00.dry[i] <- compare_colour(z[i, c('dry_L', 'dry_A', 'dry_B')], to = z[i, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from_space = 'lab', method = 'CIE2000')
+  dE00.moist[i] <- compare_colour(z[i, c('moist_L', 'moist_A', 'moist_B')], to = z[i, c('pp.L.moist', 'pp.A.moist', 'pp.B.moist')], from_space = 'lab', method = 'CIE2000')
+}
+
+
+hist(dE00.dry, breaks = 100, las=1)
+hist(dE00.moist, breaks = 100, las=1)
+
+
+# sample for viz
 s <- z[sample(1:nrow(z), size = 8), ]
+
+## TODO: back-transformation is still limited to issues with rgb2munsell
 
 dry.cols <- rgb2munsell(convert_colour(s[, c('dry_L', 'dry_A', 'dry_B')], from = 'lab', to = 'rgb') / 255)
 pred.dry.cols <- rgb2munsell(convert_colour(s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from = 'lab', to = 'rgb') / 255)
@@ -86,7 +106,18 @@ pred.dry.cols <- rgb2munsell(convert_colour(s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.
 dry.cols <- sprintf("%s %s/%s", dry.cols$hue, dry.cols$value, dry.cols$chroma)
 pred.dry.cols <- sprintf("%s %s/%s", pred.dry.cols$hue, pred.dry.cols$value, pred.dry.cols$chroma)
 
-colorContrastPlot(dry.cols, pred.dry.cols)
+colorContrastPlot(dry.cols, pred.dry.cols, labels = c('dry colors', 'predicted dry colors'))
+
+
+moist.cols <- rgb2munsell(convert_colour(s[, c('moist_L', 'moist_A', 'moist_B')], from = 'lab', to = 'rgb') / 255)
+pred.moist.cols <- rgb2munsell(convert_colour(s[, c('pp.L.moist', 'pp.A.moist', 'pp.B.moist')], from = 'lab', to = 'rgb') / 255)
+
+moist.cols <- sprintf("%s %s/%s", moist.cols$hue, moist.cols$value, moist.cols$chroma)
+pred.moist.cols <- sprintf("%s %s/%s", pred.moist.cols$hue, pred.moist.cols$value, pred.moist.cols$chroma)
+
+colorContrastPlot(moist.cols, pred.moist.cols, labels = c('moist\ncolors', 'predicted\nmoist colors'))
+
+
 
 
 
@@ -94,8 +125,7 @@ hexbinplot(pp.L.dry ~ lab$dry_L, trans = log, inv=exp, colramp=viridis, asp=1, x
 hexbinplot(pp.A.dry ~ lab$dry_A, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry A', ylab='Predicted Dry A')
 hexbinplot(pp.B.dry ~ lab$dry_B, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry B', ylab='Predicted Dry B')
 
-## way too slow -- don't need all pair-wise comparisons, just between single obs
-dE00 <- compare_colour(s[, c('dry_L', 'dry_A', 'dry_B')], to = s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from_space = 'lab', method = 'CIE2000')
+
 
 
 ## check a couple
