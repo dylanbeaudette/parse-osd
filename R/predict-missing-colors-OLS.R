@@ -5,7 +5,21 @@ library(sharpshootR)
 library(rms)
 library(farver)
 
-## TODO: try munsell value / chroma only
+## dE00 observed vs. predicted
+##
+# ## static hue, dry value / chroma model
+# 0%        5%       25%       50%       75%       95%      100% 
+# 0.000000  0.000000  0.000000  5.422945  9.359900 11.346863 61.787944 
+# 
+# ## dry LAB model, before Munsell transform
+# 0%         5%        25%        50%        75%        95%       100% 
+# 0.4382391  2.0232773  3.1119406  4.6279521  6.9709616 12.7304094 56.9446613 
+# 
+# ## dry LAB model, after Munsell transform
+# 0%        5%       25%       50%       75%       95%      100% 
+# 0.000000  0.000000  0.000000  3.931853  9.359900 11.318566 61.923273
+# 
+
 
 # from OSDs
 d <- read.csv('parsed-data.csv.gz', stringsAsFactors=FALSE)
@@ -13,122 +27,296 @@ d <- read.csv('parsed-data.csv.gz', stringsAsFactors=FALSE)
 # check initial conditions
 summary(d)
 
-# perform estimation in CIE LAB
 
-# dry colors
-dry.lab <- with(d, munsell2rgb(the_hue = dry_hue, the_value = dry_value, the_chroma = dry_chroma, returnLAB = TRUE))
-names(dry.lab) <- c('dry_L', 'dry_A', 'dry_B')
-
-# moist colors
-moist.lab <- with(d, munsell2rgb(the_hue = moist_hue, the_value = moist_value, the_chroma = moist_chroma, returnLAB = TRUE))
-names(moist.lab) <- c('moist_L', 'moist_A', 'moist_B')
-
-# check: OK
-summary(dry.lab)
-summary(moist.lab)
-
-# combine: ok
-lab <- cbind(dry.lab, moist.lab)
-nrow(lab) == nrow(d)
-
-# remove NA: ok
-lab <- na.omit(lab)
-nrow(lab)
+## estimation via value / chroma only
+x <- na.omit(d[, c('dry_hue', 'dry_value', 'dry_chroma', 'moist_hue', 'moist_value', 'moist_chroma')])
 
 # model
-dd <- datadist(lab)
+dd <- datadist(x)
 options(datadist="dd")
 
 # dry from moist
-(m.L.dry <- ols(dry_L ~ rcs(moist_L) + moist_A + moist_B, data=lab))
-(m.A.dry <- ols(dry_A ~ moist_L + rcs(moist_A) + moist_B, data=lab))
-(m.B.dry <- ols(dry_B ~ moist_L + moist_A + rcs(moist_B), data=lab))
+(m.value.dry <- ols(dry_value ~ rcs(moist_value) + moist_chroma, data=x))
+(m.chroma.dry <- ols(dry_chroma ~ rcs(moist_chroma) + moist_value, data=x))
 
-plot(Predict(m.L.dry))
-plot(Predict(m.A.dry))
-plot(Predict(m.B.dry))
+plot(Predict(m.value.dry))
+plot(Predict(m.chroma.dry))
 
-anova(m.L.dry)
-anova(m.A.dry)
-anova(m.B.dry)
+anova(m.value.dry)
+anova(m.chroma.dry)
 
 # moist from dry
-(m.L.moist <- ols(moist_L ~ rcs(dry_L) + dry_A + dry_B, data=lab))
-(m.A.moist <- ols(moist_A ~ dry_L + rcs(dry_A) + dry_B, data=lab))
-(m.B.moist <- ols(moist_B ~ dry_L + dry_A + rcs(dry_B), data=lab))
+(m.value.moist <- ols(moist_value ~ rcs(dry_value) + dry_chroma, data=x))
+(m.chroma.moist <- ols(moist_chroma ~ rcs(dry_chroma) + dry_value, data=x))
 
-plot(Predict(m.L.moist))
-plot(Predict(m.A.moist))
-plot(Predict(m.B.moist))
+plot(Predict(m.value.moist))
+plot(Predict(m.chroma.moist))
 
-anova(m.L.moist)
-anova(m.A.moist)
-anova(m.B.moist)
+anova(m.value.moist)
+anova(m.chroma.moist)
+
+## save a record of model accuracy
+sink(file = 'QC/ols-model-accuracy.txt')
+# moist colors
+print(m.value.moist)
+print(m.chroma.moist)
+# dry colors
+print(m.value.dry)
+print(m.chroma.dry)
+sink()
+
+# save model objects
+save(m.value.dry, m.value.moist, m.chroma.dry, m.chroma.moist, file='models/missing-color-models.rda')
+
 
 ## predictions from full set
-pp.L.dry <- predict(m.L.dry)
-pp.A.dry <- predict(m.A.dry)
-pp.B.dry <- predict(m.B.dry)
 
-pp.L.moist <- predict(m.L.moist)
-pp.A.moist <- predict(m.A.moist)
-pp.B.moist <- predict(m.B.moist)
+# dry
+pp.value.dry <- predict(m.value.dry)
+pp.chroma.dry <- predict(m.chroma.dry)
 
-pp.dry <- data.frame(pp.L.dry, pp.A.dry, pp.B.dry)
-pp.moist <- data.frame(pp.L.moist, pp.A.moist, pp.B.moist)
-
+# moist
+pp.value.moist <- predict(m.value.moist)
+pp.chroma.moist <- predict(m.chroma.moist)
 
 # combine
-z <- cbind(lab, pp.dry, pp.moist)
+pp.dry <- data.frame(pp.value.dry, pp.chroma.dry)
+pp.moist <- data.frame(pp.value.moist, pp.chroma.moist)
+z <- cbind(x, pp.dry, pp.moist)
 
-# operate by row, no need for pair-wise comparisons
-dE00.dry <- vector(mode = 'numeric', length = nrow(z))
-dE00.moist <- vector(mode = 'numeric', length = nrow(z))
-
-for(i in 1:nrow(z)) {
-  dE00.dry[i] <- compare_colour(z[i, c('dry_L', 'dry_A', 'dry_B')], to = z[i, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from_space = 'lab', method = 'CIE2000')
-  dE00.moist[i] <- compare_colour(z[i, c('moist_L', 'moist_A', 'moist_B')], to = z[i, c('pp.L.moist', 'pp.A.moist', 'pp.B.moist')], from_space = 'lab', method = 'CIE2000')
-}
+# check: OK
+# head(z)
 
 
-hist(dE00.dry, breaks = 100, las=1)
-hist(dE00.moist, breaks = 100, las=1)
 
 
-# sample for viz
-s <- z[sample(1:nrow(z), size = 8), ]
+## graphical eval: seems reasonable
+png(filename = 'figures/dv-model.png', width=800, height=800, res=90)
+hexbinplot(pp.value.dry ~ dry_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Value', ylab='Predicted Dry Value', colorkey=FALSE)
+dev.off()
 
-## TODO: back-transformation is still limited to issues with rgb2munsell
+png(filename = 'figures/dc-model.png', width=800, height=800, res=90)
+hexbinplot(pp.chroma.dry ~ dry_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma', colorkey=FALSE)
+dev.off()
 
-dry.cols <- rgb2munsell(convert_colour(s[, c('dry_L', 'dry_A', 'dry_B')], from = 'lab', to = 'rgb') / 255)
-pred.dry.cols <- rgb2munsell(convert_colour(s[, c('pp.L.dry', 'pp.A.dry', 'pp.B.dry')], from = 'lab', to = 'rgb') / 255)
+png(filename = 'figures/mv-model.png', width=800, height=800, res=90)
+hexbinplot(pp.value.moist ~ moist_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Value', ylab='Predicted Moist Value', colorkey=FALSE)
+dev.off()
 
-dry.cols <- sprintf("%s %s/%s", dry.cols$hue, dry.cols$value, dry.cols$chroma)
-pred.dry.cols <- sprintf("%s %s/%s", pred.dry.cols$hue, pred.dry.cols$value, pred.dry.cols$chroma)
-
-colorContrastPlot(dry.cols, pred.dry.cols, labels = c('dry colors', 'predicted dry colors'))
-
-
-moist.cols <- rgb2munsell(convert_colour(s[, c('moist_L', 'moist_A', 'moist_B')], from = 'lab', to = 'rgb') / 255)
-pred.moist.cols <- rgb2munsell(convert_colour(s[, c('pp.L.moist', 'pp.A.moist', 'pp.B.moist')], from = 'lab', to = 'rgb') / 255)
-
-moist.cols <- sprintf("%s %s/%s", moist.cols$hue, moist.cols$value, moist.cols$chroma)
-pred.moist.cols <- sprintf("%s %s/%s", pred.moist.cols$hue, pred.moist.cols$value, pred.moist.cols$chroma)
-
-colorContrastPlot(moist.cols, pred.moist.cols, labels = c('moist\ncolors', 'predicted\nmoist colors'))
+png(filename = 'figures/mc-model.png', width=800, height=800, res=90)
+hexbinplot(pp.chroma.moist ~ moist_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Chroma', ylab='Predicted Moist Chroma', colorkey=FALSE)
+dev.off()
 
 
 
 
 
-hexbinplot(pp.L.dry ~ lab$dry_L, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry L', ylab='Predicted Dry L')
-hexbinplot(pp.A.dry ~ lab$dry_A, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry A', ylab='Predicted Dry A')
-hexbinplot(pp.B.dry ~ lab$dry_B, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry B', ylab='Predicted Dry B')
+
+
+
+## make a copy of some of the data,  
+x.original <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI', 'FRISCO'))
+
+# promote to SPC and convert colors
+depths(x.original) <- seriesname ~ top + bottom
+x.original$dry_soil_color <- munsell2rgb(x.original$dry_hue, x.original$dry_value, x.original$dry_chroma)
+x.original$moist_soil_color <- munsell2rgb(x.original$moist_hue, x.original$moist_value, x.original$moist_chroma)
+
+# label
+x.original$group <- rep('Original', times=length(x.original))
+
+
+
+## fill missing color components via models
+
+# moist value
+idx <- which(is.na(d$moist_value))
+d$moist_value[idx] <- round(predict(m.value.moist, d[idx, ]))
+
+# dry value
+idx <- which(is.na(d$dry_value))
+d$dry_value[idx] <- round(predict(m.value.dry, d[idx, ]))
+
+# moist chroma
+idx <- which(is.na(d$moist_chroma))
+d$moist_chroma[idx] <- round(predict(m.chroma.moist, d[idx, ]))
+
+# dry chroma
+idx <- which(is.na(d$dry_chroma))
+d$dry_chroma[idx] <- round(predict(m.chroma.dry, d[idx, ]))
+
+
+# copy vs. prediction of hue, use moist / dry hue
+d$moist_hue[which(is.na(d$moist_hue))] <- d$dry_hue[which(is.na(d$moist_hue))]
+d$dry_hue[which(is.na(d$dry_hue))] <- d$moist_hue[which(is.na(d$dry_hue))]
+
+
+## filling missing O horizon colors requires fixing 0->O OCR errors
+idx <- grep('^0', d$name)
+sort(table(d$name[idx]), decreasing = TRUE)
+
+# repalce 0 with O
+d$name[idx] <- gsub('0', 'O', d$name[idx])
+
+
+## O horizon colors: moist and dry colors missing
+
+# find some to eval
+x.o <- d[grep('^O', d$name), ]
+nrow(x.o)
+head(x.o)
+sort(table(x.o$name), decreasing = TRUE)
+
+# generalize into a 3 classes + everything else
+x.o$genhz <- generalize.hz(x.o$name, new=c('Oi', 'Oe', 'Oa'), pat = c('Oi', 'Oe', 'Oa'))
+
+# convert colors
+x.o$dry_color <- munsell2rgb(x.o$dry_hue, x.o$dry_value, x.o$dry_chroma)
+x.o$moist_color <- munsell2rgb(x.o$moist_hue, x.o$moist_value, x.o$moist_chroma)
+
+# split and upgrade to SPC
+x.o.d <- subset(x.o, subset=! is.na(dry_color) & !is.na(top) & !is.na(bottom))
+x.o.m <- subset(x.o, subset=! is.na(moist_color) & !is.na(top) & !is.na(bottom))
+
+depths(x.o.d) <- seriesname ~ top + bottom
+depths(x.o.m) <- seriesname ~ top + bottom
+
+# aggregate colors
+a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color', k=10)
+a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color', k=10)
+
+png(file='figures/O-hz-colors-dry.png', width = 900, height=550, res=90)
+aggregateColorPlot(a.d, main='Dry Colors')
+dev.off()
+
+png(file='figures/O-hz-colors-moist.png', width = 900, height=550, res=90)
+aggregateColorPlot(a.m, main='Moist Colors')
+dev.off()
+
+knitr::kable(a.d$aggregate.data)
+knitr::kable(a.m$aggregate.data)
+
+
+## find O horizons that are missing colors, and use these ones
+
+# Oi / dry
+idx <- which(grepl('Oi', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '7.5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# Oi / moist
+idx <- which(grepl('Oi', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 2
+
+# Oe / dry
+idx <- which(grepl('Oe', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '7.5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 2
+
+# Oe / moist
+idx <- which(grepl('Oe', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 2
+
+# Oa / dry
+idx <- which(grepl('Oa', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '5YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 1
+
+# Oa / moist
+idx <- which(grepl('Oa', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '7.5YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 1
+
+# everything else, dry
+idx <- which(grepl('O', d$name) & is.na(d$dry_hue))
+d$dry_hue[idx] <- '10YR'
+d$dry_value[idx] <- 4
+d$dry_chroma[idx] <- 1
+
+# everything else, moist
+idx <- which(grepl('O', d$name) & is.na(d$moist_hue))
+d$moist_hue[idx] <- '10YR'
+d$moist_value[idx] <- 2
+d$moist_chroma[idx] <- 1
+
+
+##
+## extract same series and compare original vs. filled colors
+##
+x <- subset(d, subset = seriesname %in% c('AMADOR', 'DRUMMER', 'CECIL', 'REDDING', 'AVA', 'MIAMI', 'FRISCO'))
+x$seriesname <- paste0(x$seriesname, '-filled')
+depths(x) <- seriesname ~ top + bottom
+x$dry_soil_color <- munsell2rgb(x$dry_hue, x$dry_value, x$dry_chroma)
+x$moist_soil_color <- munsell2rgb(x$moist_hue, x$moist_value, x$moist_chroma)
+
+# label
+x$group <- rep('Filled', times=length(x))
+
+# stack
+g <- union(list(x.original, x))
+
+## graphical comparison... still needs some work
+
+png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90)
+
+par(mar=c(1,1,3,1), mfrow=c(2,1))
+groupedProfilePlot(g, name='', groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
+groupedProfilePlot(g, name='', groups='group', color='moist_soil_color') ; title('Moist Colors')
+
+dev.off()
+
+
+png(file='figures/original-dry-vs-moist.png', width = 900, height=800, res=90)
+
+par(mar=c(2,1,3,1), mfrow=c(2,1))
+plot(x.original, color='dry_soil_color', max.depth=165, name='')
+title('Original Dry Colors')
+plot(x.original, color='moist_soil_color', max.depth=165, name='')
+title('Original Moist Colors')
+
+dev.off()
+
+
+png(file='figures/filled-dry-vs-moist.png', width = 900, height=800, res=90)
+
+par(mar=c(2,1,3,1), mfrow=c(2,1))
+plot(x, color='dry_soil_color', max.depth=165, name='')
+title('Filled Dry Colors')
+plot(x, color='moist_soil_color', max.depth=165, name='')
+title('Filled Moist Colors')
+
+dev.off()
+
+
+## TODO: illustrate missing colors / filled colors / predictions
+
+par(mar=c(1,1,1,1))
+plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
+points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$dry_soil_color)
+points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$dry_soil_color)
+
+par(mar=c(1,1,1,1))
+plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
+points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$moist_soil_color)
+points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$moist_soil_color)
 
 
 
 
-## check a couple
+## save results
+write.csv(d, file=gzfile('parsed-data-est-colors.csv.gz'), row.names=FALSE)
+
+
+
+
 
 
 

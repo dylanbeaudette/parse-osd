@@ -9,3 +9,5 @@ R/fulltext-section-data.sql
 README.html
 R/logfile*.csv
 R/problem-OSDs*.txt
+R/fulltext-section-data.sql.gz
+R/fulltext-data.sql.gz

@@ -37,7 +37,7 @@ if(reFit) {
   dc.rf <- randomForest(dry_chroma ~ moist_value + moist_chroma + moist_hue, data=d, na.action=na.omit)
   
   # save for next time
-  save(mv.rf, mc.rf, dv.rf, dc.rf, file='models/missing-color-models.rda')
+  save(mv.rf, mc.rf, dv.rf, dc.rf, file='models/missing-color-RF-models.rda')
 } else {
   # load the models from last time
   load('models/missing-color-models.rda')
@@ -45,7 +45,7 @@ if(reFit) {
 
 
 ## save a record of model accuracy
-sink(file = 'rf-model-accuracy.txt')
+sink(file = 'QC/rf-model-accuracy.txt')
 # moist colors
 print(mv.rf)
 print(mc.rf)

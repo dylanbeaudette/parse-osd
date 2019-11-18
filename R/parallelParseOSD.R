@@ -4,6 +4,7 @@ library(plyr)
 library(rvest)
 library(purrr)
 library(furrr)
+library(R.utils)
 
 # functions used here, some of which will go to soilDB
 source('local_functions.R')
@@ -67,6 +68,17 @@ makeFullTextTable(z)
 # process sections
 z <- map(res, pluck, 'result', 'sections')
 makeFullTextSectionsTable(z)
+
+
+## compress fulltext
+f <- list.files(path='.', pattern = '\\.sql', full.names = TRUE)
+
+for(i in f) {
+  print(i)
+  gzip(i, remove=TRUE, skip=TRUE)
+}
+
+
 
 
 ## TODO: finish error checking and "problem OSDs"

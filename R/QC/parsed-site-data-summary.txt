@@ -1,0 +1,26 @@
+
+> Hmisc::describe(s)
+s 
+
+ 2  Variables      23884  Observations
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+drainage 
+       n  missing distinct 
+   23829       55        8 
+                                                                                                                                                             
+Value               excessively      moderately well               poorly somewhat excessively      somewhat poorly           subaqueous          very poorly
+Frequency                   494                 2672                 1806                 1290                 2102                   32                  849
+Proportion                0.021                0.112                0.076                0.054                0.088                0.001                0.036
+                               
+Value                      well
+Frequency                 14584
+Proportion                0.612
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+seriesname 
+       n  missing distinct 
+   23884        0    23884 
+
+lowest : AABAB  AABERG AAGARD AARON  AARUP , highest: ZYNBAR ZYPLAR ZYZYL  ZYZZI  ZYZZUG
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+> sink()

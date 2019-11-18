@@ -9,16 +9,19 @@
 # ~ 42 minutes parallel
 source('parallelParseOSD.R')
 
-
 ## 2. fill-in missing colors using brute force modeling approach
 # ~ 4 minutes run time
 source('predict-missing-colors.R')
 
-# 3. send to SoilWeb
+
+## 3. diagnostics
+source('diagnostics.R')
+
+## 4. send to SoilWeb
 
 
 
-# 4. re-load data: see sql/ dir in this repo
+## 5. re-load data: see sql/ dir in this repo
 
 
 

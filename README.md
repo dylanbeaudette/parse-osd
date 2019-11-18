@@ -2,6 +2,7 @@
 Code related to parsing of the OSD HTML files.
 
 # Updates
+* 2019-11-18: re-paesed OSDs, missing colors predicted via OLS(value, chroma)
 * 2019-05-30: re-parsed OSDs
 * 2019-01-28: re-parsed OSDs with latest SC database
 * 2018-10-01: re-parsed OSDs with latest SC database
@@ -33,9 +34,9 @@ Experimental version [here](http://soilmap2-1.lawr.ucdavis.edu/dylan/soilweb/osd
 
 
 ## Estimation of Missing Dry / Moist Colors
-details pending...
+OLS estimation of dry/moist value and chroma.
 
-![](R/figures/dry-original-vs-filled-example.png)
+![](R/figures/dE00-eval-example-001.png)
 
 
 ## Representative O Horizon Colors
@@ -47,10 +48,10 @@ Most O horizons in the OSD soil color DB are missing colors. What are some of th
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
 |:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
-|Oi       |10YR        |             4|              2|     0.0202535|#786351 | 0.46954| 0.38851| 0.31702| 45|
-|Oe       |7.5YR       |             4|              2|     0.0131792|#736152 | 0.45094| 0.38188| 0.32210| 55|
-|Oa       |7.5YR       |             4|              2|     0.0233707|#6D5E52 | 0.42616| 0.36840| 0.32122| 51|
-|not-used |7.5YR       |             4|              2|     0.0316714|#746659 | 0.45371| 0.39936| 0.34802| 14|
+|Oi       |7.5YR       |             4|              2|     0.0270292|#7C6656 | 0.48527| 0.40168| 0.33816| 10|
+|Oe       |7.5YR       |             4|              2|     0.0301911|#756659 | 0.46048| 0.40085| 0.34928| 10|
+|Oa       |5YR         |             4|              1|     0.0181012|#6E6157 | 0.43050| 0.37866| 0.34310| 10|
+|not-used |10YR        |             4|              1|     0.0387446|#786A5F | 0.46932| 0.41666| 0.37299| 10|
 
 ### Moist Colors
 ![](R/figures/O-hz-colors-moist.png)
@@ -58,10 +59,11 @@ Most O horizons in the OSD soil color DB are missing colors. What are some of th
 
 |genhz    |munsell.hue | munsell.value| munsell.chroma| munsell.sigma|col     |     red|   green|    blue|  n|
 |:--------|:-----------|-------------:|--------------:|-------------:|:-------|-------:|-------:|-------:|--:|
-|Oi       |7.5YR       |             2|              2|     0.0352437|#49392C | 0.28616| 0.22394| 0.17414| 50|
-|Oe       |7.5YR       |             2|              2|     0.0277540|#44362C | 0.26550| 0.21265| 0.17166| 47|
-|Oa       |10YR        |             2|              1|     0.0136850|#3D322B | 0.23778| 0.19784| 0.17046| 42|
-|not-used |10YR        |             2|              1|     0.0369132|#443A31 | 0.26820| 0.22616| 0.19025| 16|
+|Oi       |7.5YR       |             2|              2|     0.0345739|#47392E | 0.27999| 0.22189| 0.18220| 10|
+|Oe       |7.5YR       |             2|              2|     0.0265271|#46362C | 0.27262| 0.21103| 0.17314| 10|
+|Oa       |7.5YR       |             2|              1|     0.0128594|#3D322C | 0.23953| 0.19680| 0.17188| 10|
+|not-used |10YR        |             2|              1|     0.0378360|#443A30 | 0.26831| 0.22693| 0.18916| 10|
+
 
 ## TODO
   * figure out how to deal with multiple colors
