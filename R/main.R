@@ -1,6 +1,6 @@
-##
-##
-## 
+## Extract as much detail from text OSDs as possible, process colors, push to SoilWeb
+## D.E. Beaudette
+## 2019-11-19
 
 
 ## 1. get / parse data
@@ -9,10 +9,11 @@
 # ~ 42 minutes parallel
 source('parallelParseOSD.R')
 
-## 2. fill-in missing colors using brute force modeling approach
-# ~ 4 minutes run time
+## 2. fill-in missing colors using OLS estimation of value and chroma
+# ~ 2 minutes
 source('predict-missing-colors.R')
 
+## TODO: finish evaluation / interpretation of color models
 
 ## 3. diagnostics
 source('diagnostics.R')
