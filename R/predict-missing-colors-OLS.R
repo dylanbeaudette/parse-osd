@@ -31,6 +31,9 @@ summary(d)
 ## estimation via value / chroma only
 x <- na.omit(d[, c('dry_hue', 'dry_value', 'dry_chroma', 'moist_hue', 'moist_value', 'moist_chroma')])
 
+# check assumption: moist/dry hues are the same
+round(prop.table(table(x$dry_hue == x$moist_hue)), 3)
+
 # model
 dd <- datadist(x)
 options(datadist="dd")
@@ -39,7 +42,7 @@ options(datadist="dd")
 (m.value.dry <- ols(dry_value ~ rcs(moist_value) + moist_chroma, data=x))
 (m.chroma.dry <- ols(dry_chroma ~ rcs(moist_chroma) + moist_value, data=x))
 
-plot(Predict(m.value.dry))
+plot(Predict(m.value.dry), xlab='', ylab='dry value', asp=1)
 plot(Predict(m.chroma.dry))
 
 anova(m.value.dry)
