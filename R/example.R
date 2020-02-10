@@ -7,6 +7,9 @@ library(aqp)
 
 source('local_functions.R')
 
+# old-style O horizons and formatting errors
+# https://github.com/dylanbeaudette/parse-osd/issues/12
+testIt('KLAWASI')
 
 # 
 testIt('tiger creek')
