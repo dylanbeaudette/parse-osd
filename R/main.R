@@ -11,7 +11,7 @@ source('parallelParseOSD.R')
 
 ## 2. fill-in missing colors using OLS estimation of value and chroma
 # ~ 2 minutes
-source('predict-missing-colors.R')
+source('predict-missing-colors-OLS.R')
 
 ## TODO: finish evaluation / interpretation of color models
 
