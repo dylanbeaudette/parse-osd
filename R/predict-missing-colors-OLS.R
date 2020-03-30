@@ -91,27 +91,43 @@ z <- cbind(x, pp.dry, pp.moist)
 # head(z)
 
 
-
+## note: must print() lattice graphics when code is source()-ed
 
 ## graphical eval: seems reasonable
 png(filename = 'figures/dv-model.png', width=800, height=800, res=90)
-hexbinplot(pp.value.dry ~ dry_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Value', ylab='Predicted Dry Value', colorkey=FALSE)
+
+print(
+  hexbinplot(pp.value.dry ~ dry_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Value', ylab='Predicted Dry Value', colorkey=FALSE)
+)
+
 dev.off()
+
 
 png(filename = 'figures/dc-model.png', width=800, height=800, res=90)
-hexbinplot(pp.chroma.dry ~ dry_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma', colorkey=FALSE)
+
+print(
+  hexbinplot(pp.chroma.dry ~ dry_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Dry Chroma', ylab='Predicted Dry Chroma', colorkey=FALSE)
+)
+
 dev.off()
+
 
 png(filename = 'figures/mv-model.png', width=800, height=800, res=90)
-hexbinplot(pp.value.moist ~ moist_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Value', ylab='Predicted Moist Value', colorkey=FALSE)
+
+print(
+  hexbinplot(pp.value.moist ~ moist_value, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Value', ylab='Predicted Moist Value', colorkey=FALSE)
+)
+
 dev.off()
+
 
 png(filename = 'figures/mc-model.png', width=800, height=800, res=90)
-hexbinplot(pp.chroma.moist ~ moist_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Chroma', ylab='Predicted Moist Chroma', colorkey=FALSE)
+
+print(
+  hexbinplot(pp.chroma.moist ~ moist_chroma, data=x, trans = log, inv=exp, colramp=viridis, asp=1, xbins=10, xlab='Observed Moist Chroma', ylab='Predicted Moist Chroma', colorkey=FALSE)
+)
+
 dev.off()
-
-
-
 
 
 
@@ -188,9 +204,11 @@ depths(x.o.m) <- seriesname ~ top + bottom
 a.d <- aggregateColor(x.o.d, groups='genhz', col='dry_color', k=10)
 a.m <- aggregateColor(x.o.d, groups='genhz', col='moist_color', k=10)
 
+
 png(file='figures/O-hz-colors-dry.png', width = 900, height=550, res=90)
 aggregateColorPlot(a.d, main='Dry Colors')
 dev.off()
+
 
 png(file='figures/O-hz-colors-moist.png', width = 900, height=550, res=90)
 aggregateColorPlot(a.m, main='Moist Colors')
@@ -266,6 +284,9 @@ x$group <- rep('Filled', times=length(x))
 # stack
 g <- union(list(x.original, x))
 
+# convert to factor for groupedProfilePlot
+g$group <- factor(g$group)
+
 ## graphical comparison... still needs some work
 
 png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90)
@@ -299,18 +320,19 @@ title('Filled Moist Colors')
 dev.off()
 
 
-## TODO: illustrate missing colors / filled colors / predictions
 
-par(mar=c(1,1,1,1))
-plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
-points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$dry_soil_color)
-points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$dry_soil_color)
+## alternative display with colorspace::swatchplot()
 
-par(mar=c(1,1,1,1))
-plot(expand.grid(x=1:36, y=1:2), xlim=c(0.5,36.5), ylim=c(0.5, 5), axes=FALSE, type='n')
-points(expand.grid(x=1:36, y=1), pch=22, cex=3, bg=x.original$moist_soil_color)
-points(expand.grid(x=1:36, y=2), pch=22, cex=3, bg=x$moist_soil_color)
+png(file='figures/original-vs-filled-swatch.png', width=700, height=400, res=90)
 
+colorspace::swatchplot(
+  'dry missing'=x.original$dry_soil_color,
+  'moist missing'=x.original$moist_soil_color,
+  'dry filled'=x$dry_soil_color,
+  'moist filled'=x$moist_soil_color
+)
+
+dev.off()
 
 
 

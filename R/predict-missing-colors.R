@@ -1,3 +1,10 @@
+
+##
+## 2020-03-30: no longer using this, switching to OLS modeling
+##
+
+stop('no longer using RF, see OLS model')
+
 ##
 ## 2015-06-23
 ## fill-in missing / incorrectly parsed OSD colors using brute-force supervised classification

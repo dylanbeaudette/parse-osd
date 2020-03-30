@@ -71,7 +71,7 @@ makeFullTextSectionsTable(z)
 
 
 ## compress fulltext
-f <- list.files(path='.', pattern = '\\.sql', full.names = TRUE)
+f <- list.files(path='.', pattern = '\\.sql$', full.names = TRUE)
 
 for(i in f) {
   print(i)
