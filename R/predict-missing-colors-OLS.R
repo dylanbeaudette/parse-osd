@@ -4,6 +4,7 @@ library(aqp)
 library(sharpshootR)
 library(rms)
 library(farver)
+library(visreg)
 
 ## dE00 observed vs. predicted
 ##
@@ -57,6 +58,17 @@ plot(Predict(m.chroma.moist))
 
 anova(m.value.moist)
 anova(m.chroma.moist)
+
+# 
+# ## partial effects via visreg
+# par(mfrow=c(4,2))
+# visreg(m.value.dry)
+# visreg(m.value.moist)
+# 
+# visreg(m.chroma.dry)
+# visreg(m.chroma.moist)
+
+
 
 ## save a record of model accuracy
 sink(file = 'QC/ols-model-accuracy.txt')
