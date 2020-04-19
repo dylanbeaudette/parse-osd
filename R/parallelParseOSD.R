@@ -75,7 +75,7 @@ f <- list.files(path='.', pattern = '\\.sql$', full.names = TRUE)
 
 for(i in f) {
   print(i)
-  gzip(i, remove=TRUE, skip=TRUE)
+  gzip(i, remove=TRUE, skip=FALSE)
 }
 
 
