@@ -38,6 +38,11 @@ system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
 # stop back-ends
 plan(sequential)
 
+## TODO: update cached copy, for those series that have been updated since the last run
+# cache results just in case
+saveRDS(res, file='cached-copy.rds')
+
+
 ## process horizon data
 z <- map(res, pluck, 'result', 'hz')
 # remove NULL
