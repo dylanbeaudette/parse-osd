@@ -11,3 +11,4 @@ R/logfile*.csv
 R/problem-OSDs*.txt
 R/fulltext-section-data.sql.gz
 R/fulltext-data.sql.gz
+R/cached-copy.rds
