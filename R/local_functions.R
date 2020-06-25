@@ -211,6 +211,40 @@ parse_texture <- function(text) {
   return(m)
 }
 
+# vectorized parsing of horizon boundary
+parse_hz_boundary <- function(text) {
+  
+  distinctness <- c('very abrupt', 'abrupt', 'clear', 'gradual', 'diffuse')
+  topography <- c('smooth', 'wavy', 'irregular', 'broken')
+  bdy <- apply(expand.grid(distinctness, topography), 1, paste, collapse=' ')
+  
+  
+  ## TODO: this is too greedy ?
+  # https://github.com/dylanbeaudette/parse-osd/issues/10
+  
+  # combine into capturing REGEX
+  bdy.regex <- paste0('(', paste(bdy, collapse='|'), ') boundary')
+  
+  # get matches
+  m <- stri_match(text, regex = bdy.regex, mode='first', opts_regex=list(case_insensitive=TRUE))
+  
+  # fail gracefully in the case of no section data or no matches
+  if(nrow(m) < 1)
+    return(NA)
+  
+  # keep only matches and convert to lower case
+  m <- tolower(m[, 2])
+  
+  # split into pieces
+  res <- data.frame(
+    distinctness = findClass(needle=distinctness, haystack=m),
+    topography = findClass(needle=topography, haystack=m),
+    stringsAsFactors = FALSE
+  )
+  
+  return(res)
+}
+
 # vectorized parsing of coarse fraction qty+class from OSD
 parse_CF <- function(text) {
   cf.type <- c('gravelly', 'cobbly', 'stony', 'bouldery', 'channery', 'flaggy')
@@ -650,6 +684,10 @@ extractHzData <- function(s.lines) {
   res$cf_class <- parse_CF(narrative.data$narrative)
   res$pH <- parse_pH(narrative.data$narrative)
   res$pH_class <- parse_pH_class(narrative.data$narrative)
+  
+  bdy <- parse_hz_boundary(narrative.data$narrative)
+  res$distinctness <- bdy$distinctness
+  res$topography <- bdy$topography
   
   # add narrative
   res <- cbind(res, narrative.data)
