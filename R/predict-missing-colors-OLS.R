@@ -299,15 +299,24 @@ g <- union(list(x.original, x))
 # convert to factor for groupedProfilePlot
 g$group <- factor(g$group)
 
+# new group with original series name
+g$original.name <- site(g)[[idname(g)]]
+# trim 'filled'
+g$original.name <- gsub('-filled', '', g$original.name)
+
 ## graphical comparison... still needs some work
 
 png(file='figures/dry-original-vs-filled-example.png', width = 900, height=800, res=90)
 
 par(mar=c(1,1,3,1), mfrow=c(2,1))
-groupedProfilePlot(g, name='', groups='group', color='dry_soil_color', id.style='side') ; title('Dry Colors')
-groupedProfilePlot(g, name='', groups='group', color='moist_soil_color') ; title('Moist Colors')
+groupedProfilePlot(g, name='', groups='original.name', color='dry_soil_color', id.style='side', label='group') ; title('Dry Colors')
+groupedProfilePlot(g, name='', groups='original.name', color='moist_soil_color', id.style='side', label='group') ; title('Moist Colors')
 
 dev.off()
+
+
+
+
 
 
 png(file='figures/original-dry-vs-moist.png', width = 900, height=800, res=90)
