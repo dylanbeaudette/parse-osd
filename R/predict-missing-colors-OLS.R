@@ -59,9 +59,13 @@ plot(Predict(m.chroma.moist))
 anova(m.value.moist)
 anova(m.chroma.moist)
 
+## finish this
+# plot(summary(m.value.moist, dry_value=c(3,4), dry_chroma=c(3,4)))
+# plot(summary(m.value.dry, moist_value=c(3,4)))
+
 # 
-# ## partial effects via visreg
-# par(mfrow=c(4,2))
+## partial effects via visreg: not all that interesting
+
 # visreg(m.value.dry)
 # visreg(m.value.moist)
 # 
