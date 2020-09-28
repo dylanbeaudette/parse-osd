@@ -10,6 +10,9 @@ source('local_functions.R')
 testIt('TINTERO')
 
 
+# color moist and dry not correctly interpreted
+testIt('KALAPA')
+
 
 # old-style O horizons and formatting errors
 # https://github.com/dylanbeaudette/parse-osd/issues/12
