@@ -7,6 +7,10 @@ library(aqp)
 
 source('local_functions.R')
 
+
+testIt('PAIA')
+
+
 testIt('TINTERO')
 
 
