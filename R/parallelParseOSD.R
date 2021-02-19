@@ -12,7 +12,7 @@ source('local_functions.R')
 
 # load latest SC-database
 tf <- tempfile()
-download.file(url = 'https://github.com/ncss-tech/SoilTaxonomy/raw/master/databases/SC-database.csv.gz', destfile = tf)
+download.file(url = 'https://github.com/ncss-tech/SoilTaxonomy/raw/master/inst/extdata/SC-database.csv.gz', destfile = tf)
 x <- read.csv(tf, stringsAsFactors=FALSE)
 
 # keep only those records that are established or tentative
@@ -30,6 +30,8 @@ plan(multisession)
 # ~ 12 sec parallel   [100 series]
 # ~ 28 seconds parallel [250 random series]
 # system.time(res <- future_map(x[sample(1:length(x), size = 250)], downloadParseSave.safe, .progress=TRUE))
+
+## works much better without VPN
 
 # full set: ~ 41 minutes
 system.time(res <- future_map(x, downloadParseSave.safe, .progress=TRUE))
