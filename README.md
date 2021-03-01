@@ -3,6 +3,7 @@ Code related to parsing of the OSD HTML files.
 
 # Moving Forward
  * convert over to local OSD text file access via [OSDRegistry repo](https://github.com/ncss-tech/OSDRegistry)
+ * double-check that output is identical
  * move relevant functions to `soilDB` or `sharpshootR`:
    - getOSD
    - seriesNameToURL
