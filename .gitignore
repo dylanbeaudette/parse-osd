@@ -12,3 +12,9 @@ R/problem-OSDs*.txt
 R/fulltext-section-data.sql.gz
 R/fulltext-data.sql.gz
 R/cached-copy.rds
+
+R/cached-copy-OSDRegistry.rds
+R/fulltext-data-WWW.sql.gz
+R/parsed-site-data-OSDRegistry.csv.gz
+R/fulltext-section-data-WWW.sql.gz
+R/parsed-data-OSDRegistry.csv.gz

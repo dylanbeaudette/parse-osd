@@ -1,7 +1,4 @@
 
-### TODO: test / move into soilDB ###
-
-## TODO: the parsing functions can be generalized into wrapper and single function that accepts text + classes
 
 # re-make entire fulltext table, containing an OSD per record
 makeFullTextTable <- function(fullTextList, outputFile='fulltext-data.sql') {
@@ -65,9 +62,16 @@ additional_data text
 
 downloadParseSave <- function(i) {
   
-  # get OSD
+  # get OSD from WWW pages / HTML parsing
   # result is a list
-  i.lines <- try(getOSD(i), silent = TRUE)
+  # i.lines <- try(getOSD(i), silent = TRUE)
+  
+  # get from local OSDRegistry repository
+  # result is a list
+  i.lines <- try(
+    getLocalOSD(i, path = 'E:/working_copies/OSDRegistry/OSD'),
+    silent = TRUE
+  )
   
   # no OSD...
   if(class(i.lines) == 'try-error')
@@ -131,6 +135,23 @@ downloadParseSave.safe <- purrr::safely(downloadParseSave)
 testIt <- function(x) {
   # get data
   res <- getOSD(x)
+  
+  # init section REGEX: critical for locating brief narrative
+  setSectionREGEX(x)
+  
+  # extract sections
+  l <- list()
+  l[['sections']] <- extractSections(res)
+  l[['section-indices']] <- findSectionIndices(res)
+  l[['site-data']] <- extractSiteData(l[['sections']])
+  l[['hz-data']] <- extractHzData(res)
+  
+  return(l)
+}
+
+testItLocal <- function(x, path = 'E:/working_copies/OSDRegistry/OSD') {
+  # get data
+  res <- getLocalOSD(x, path)
   
   # init section REGEX: critical for locating brief narrative
   setSectionREGEX(x)
@@ -373,14 +394,7 @@ setSectionREGEX <- function(s) {
 }
 
 
-# remove blank lines from HTML text
-removeBlankLines <- function(chunk) {
-  # extract lines and remove blank / NA lines
-  chunk.lines <- readLines(textConnection(chunk))
-  chunk.lines <- chunk.lines[which(chunk.lines != '')]
-  chunk.lines <- chunk.lines[which(!is.na(chunk.lines))]
-  return(chunk.lines)
-}
+
 
 
 # locate section line numbers
@@ -445,14 +459,7 @@ extractSections <- function(chunk.lines, collapseLines=TRUE) {
 }
 
 
-seriesNameToURL <- function(s) {
-  base.url <- 'http://soilseriesdesc.sc.egov.usda.gov/OSD_Docs/'
-  s <- toupper(s)
-  # convert space to _
-  s <- gsub(pattern = ' ', replacement = '_', s)
-  u <- paste0(base.url, substr(s, 1, 1), '/', s, '.html')
-  return(u)
-}
+
 
 
 # convert HTML text to fulltext DB table record
@@ -496,7 +503,49 @@ getOSD <- function(s) {
   return(s.html.text)
 }
 
+seriesNameToURL <- function(s) {
+  base.url <- 'http://soilseriesdesc.sc.egov.usda.gov/OSD_Docs/'
+  s <- toupper(s)
+  # convert space to _
+  s <- gsub(pattern = ' ', replacement = '_', s)
+  u <- paste0(base.url, substr(s, 1, 1), '/', s, '.html')
+  return(u)
+}
 
+# remove blank lines from HTML text
+removeBlankLines <- function(chunk) {
+  # extract lines and remove blank / NA lines
+  chunk.lines <- readLines(textConnection(chunk))
+  chunk.lines <- chunk.lines[which(chunk.lines != '')]
+  chunk.lines <- chunk.lines[which(!is.na(chunk.lines))]
+  return(chunk.lines)
+}
+
+# get an OSD from OSDRegistry working copy
+getLocalOSD <- function(s, path) {
+  # file name
+  fn <- seriesNameToFileName(s)
+  # local path
+  fp <- file.path(path, fn)
+  # load text lines
+  s.text <- readLines(fp)
+  # remove blank lines
+  s.text <- s.text[which(s.text != '')]
+  s.text <- s.text[which(!is.na(s.text))]
+  # strip double quotes by converting to " inches"
+  s.text <- gsub('"', ' inches', s.text)
+  # done
+  return(s.text)
+}
+
+seriesNameToFileName <- function(s) {
+  s <- toupper(s)
+  # convert space to _
+  s <- gsub(pattern = ' ', replacement = '_', s)
+  # first-letter indexing
+  u <- sprintf('%s/%s.%s', substr(s, 1, 1), s, 'txt')
+  return(u)
+}
 
 # parse important pieces from sections
 # x: list of section chunks
