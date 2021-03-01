@@ -1,6 +1,18 @@
 # parse-osd
 Code related to parsing of the OSD HTML files.
 
+# Moving Forward
+ * convert over to local OSD text file access via [OSDRegistry repo](https://github.com/ncss-tech/OSDRegistry)
+ * move relevant functions to `soilDB` or `sharpshootR`:
+   - getOSD
+   - seriesNameToURL
+   - getLocalOSD
+   - seriesNameToFileName
+ * re-factor code to use OSD JSON files via [SoilKnowledgeBase repo](https://github.com/ncss-tech/SoilKnowledgeBase)
+ * address existing issues
+ * archive old code
+
+
 # Updates
 * 2019-11-18: re-parsed OSDs, missing colors predicted via OLS(value, chroma)
 * 2019-05-30: re-parsed OSDs
